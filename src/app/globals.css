@@ -1,26 +1,27 @@
 @import "tailwindcss";
+/* @import "@heroui/styles"; */
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+.bg-primary {
+  @apply bg-[#ff7a00] text-white;
+}
+.bg-white {
+  @apply bg-[#fffdf9] text-white;
+}
+.bg-secondary {
+  @apply bg-[#fff1e6] text-white;
+}
+.btn-gradient {
+  @apply bg-gradient-to-r from-[#ff9a3c] via-[#ff7a00] to-[#f06800] text-white rounded-2xl;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.flexItemCenter {
+  @apply flex items-center justify-center;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.flexItemBetween {
+  @apply flex items-center justify-between;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.flexItemStart {
+  @apply flex items-center justify-start;
 }
