@@ -1,8 +1,6 @@
-import React from "react";
-
 const HomeHero = () => {
   return (
-    <div clssName="min-h-screen flex-center">
+    <div className="flex flex-col items-center text-center gap-6 py-16 px-4">
       <div className="btn-gradient text-white text-xs font-bold tracking-widest uppercase px-5 py-2 rounded-full w-max">
         The Tastiest Place on the Internet
       </div>
