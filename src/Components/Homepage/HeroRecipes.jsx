@@ -1,19 +1,19 @@
 import Link from "next/link";
 
-const HomeFeature = async () => {
-  const res = await fetch("http://localhost:8080/featured", {
-    cache: "no-store",
+const HeroRecipes = async () => {
+  const res = await fetch("http://localhost:8080/recipes", {
+    cache: "no-cache",
   });
-  const fetchFeatures = await res.json();
+  const fetchRecipes = await res.json();
   return (
-    <div>
+    <div className="mt-10">
       <div className="flex items-center justify-between mb-6 gap-100">
         <div>
           <h2 className="text-2xl font-bold text-gray-800 border-l-4 border-orange-500 pl-3">
-            Featured Recipes
+            All Recipes
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            Hand-picked favourites by our editorial team
+            Explore our full collection of cummunity recipes
           </p>
         </div>
 
@@ -27,7 +27,7 @@ const HomeFeature = async () => {
         </div>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {fetchFeatures?.map((feature) => (
+        {fetchRecipes?.map((feature) => (
           <div
             key={feature._id}
             className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all"
@@ -79,4 +79,4 @@ const HomeFeature = async () => {
   );
 };
 
-export default HomeFeature;
+export default HeroRecipes;
