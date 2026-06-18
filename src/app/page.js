@@ -1,6 +1,7 @@
 import HomeHero from "@/Components/Homepage/hero";
 import HeroRecipes from "@/Components/Homepage/HeroRecipes";
 import HomeFeature from "@/Components/Homepage/HomeFeature";
+import HomeRating from "@/Components/Homepage/HomeRating";
 import Image from "next/image";
 
 export default function Home() {
@@ -9,6 +10,7 @@ export default function Home() {
       <HomeHero></HomeHero>
       <HomeFeature></HomeFeature>
       <HeroRecipes></HeroRecipes>
+      <HomeRating></HomeRating>
     </div>
   );
 }
