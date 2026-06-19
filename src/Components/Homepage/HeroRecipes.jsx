@@ -28,8 +28,9 @@ const HeroRecipes = async () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {fetchRecipes?.map((feature) => (
-          <div
+          <Link
             key={feature._id}
+            href={`/recipes/${feature._id}`}
             className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all"
           >
             {/* ইমেজ এবং টপ ব্যাজ সেকশন */}
@@ -72,7 +73,7 @@ const HeroRecipes = async () => {
                 </div>
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

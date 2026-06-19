@@ -39,6 +39,7 @@ const SignupPage = () => {
         image: photoURL,
         role: data.role,
         plan: "free",
+        isBlocking: false,
         callbackURL: "/",
       });
 
