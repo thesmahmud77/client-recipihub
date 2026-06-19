@@ -45,7 +45,7 @@ const SigninPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#FAF6F0] py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen w-full flex flex-col items-center justify-center border-2 rounded-2xl my-20 border-gray-300/20 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-6">
         {/* হেডার সেকশন */}
         <div className="text-center">

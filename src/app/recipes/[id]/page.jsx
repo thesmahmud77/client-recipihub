@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ShoppingCart } from "@gravity-ui/icons";
+import { NodesRight } from "@gravity-ui/icons";
 
 const RecipeDetailsPage = async ({ params }) => {
   const { id } = await params;
@@ -32,7 +34,7 @@ const RecipeDetailsPage = async ({ params }) => {
   const relatedRecipes = await relatedRes.json();
 
   return (
-    <div className="bg-[#FAF6F0] min-h-screen py-8">
+    <div className=" min-h-screen py-8">
       <div className="max-w-6xl mx-auto px-4">
         {/* মেইন সেকশন: ব্যাকগ্রাউন্ড সাদা এবং রাউন্ডেড বক্স */}
         <div className="bg-white rounded-2xl p-6 md:p-8 shadow-sm mb-8">
@@ -108,6 +110,24 @@ const RecipeDetailsPage = async ({ params }) => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
+            <button className="flex items-center gap-2 bg-primary rounded-2xl px-5 py-3 cursor-pointer">
+              <ShoppingCart></ShoppingCart>
+              <span>Purchase Recipe</span>
+              <span className="bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-lg ml-1">
+                $4.99
+              </span>
+            </button>
+            <button className="flex items-center gap-2 bg-secondary border-2 border-gray-300/50 rounded-2xl px-5 py-3 cursor-pointer">
+              <NodesRight></NodesRight>
+              <span>Share</span>
+            </button>
+          </div>
+          <button className="flex items-center gap-2 bg-red-500 rounded-2xl px-5 py-3 cursor-pointer">
+            Report
+          </button>
         </div>
         <div className="mt-12">
           <h2 className="text-xl font-bold text-gray-800 border-l-4 border-orange-500 pl-3 mb-6">
