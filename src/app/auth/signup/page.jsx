@@ -4,17 +4,56 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { Eye } from "@gravity-ui/icons";
 import { EyeSlash } from "@gravity-ui/icons";
+import { signUp } from "@/lib/auth-client";
 
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm();
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     console.log("Form Submitted Data:", data);
+    setLoading(true);
+    const imgFile = data.photo[0];
+    const formData = new FormData();
+    formData.append("image", imgFile);
+    const imgbbRes = await fetch(
+      `https://api.imgbb.com/1/upload?key=d11b800a59dcca4d8f9ddb86c014f5f7`,
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
+    const imgbbData = await imgbbRes.json();
+    const photoURL = imgbbData.data.url;
+    try {
+      const { data: authData, error } = await signUp.email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        image: photoURL,
+        role: data.role,
+        plan: "free",
+        callbackURL: "/",
+      });
+
+      if (error) {
+        alert(error.message);
+      } else {
+        alert("Account Created Successfully!");
+        reset();
+      }
+    } catch (err) {
+      alert("Something went wrong!");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -176,50 +215,25 @@ const SignupPage = () => {
           </div>
 
           {/* ৫. প্রোফাইল ফটো আপলোড সেকশন (Dashed Border Card) */}
-          <div className="flex flex-col space-y-1.5">
-            <label className="text-sm font-bold text-[#2A1A12]">
-              Profile Photo
+          <div className="flex flex-col gap-1 text-start">
+            <label className="text-sm font-medium text-gray-700">
+              Your Photo
             </label>
-            <div className="border-2 border-dashed border-[#E6DCD3] bg-[#FFFBF7] rounded-3xl p-5 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-full bg-[#F5EFEA] flex items-center justify-center text-[#8A7970]">
-                  {/* Avatar Icon */}
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                    />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-[#2A1A12]">
-                    Upload your avatar
-                  </p>
-                  <p className="text-xs text-[#8A7970]">PNG, JPG up to 5MB</p>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="px-4 py-2 bg-[#FBF6F0] hover:bg-[#F5EFEA] border border-[#E6DCD3] text-xs font-bold text-[#FF7214] rounded-full transition-colors"
-              >
-                Browse
-              </button>
-            </div>
+            <input
+              type="file"
+              accept="image/*"
+              {...register("photo", { required: true })}
+              className="border p-2 rounded-md focus:outline-none focus:ring-1 focus:ring-amber-600 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:bg-amber-600 file:text-white file:cursor-pointer"
+            />
           </div>
 
           {/* ৬. ক্রিয়েট অ্যাকাউন্ট সাবমিট বাটন */}
           <button
             type="submit"
-            className="w-full py-3.5 bg-[#FF7214] text-white font-bold text-sm rounded-full shadow-sm hover:bg-[#E65F05] transition-all active:scale-[0.99] transform mt-2 cursor-pointer"
+            disabled={loading}
+            className="bg-amber-600 w-full py-3 text-white p-2 rounded-md font-semibold cursor-pointer hover:bg-amber-700 transition-colors mt-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Create Account
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </form>
 
