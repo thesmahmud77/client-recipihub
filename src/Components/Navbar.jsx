@@ -40,7 +40,10 @@ const Navbar = () => {
             Browse Recipes
           </Link>
           {user && (
-            <Link href="/dashboard" className={navLinkClass("/dashboard")}>
+            <Link
+              href={`/deshboard/${user.role}`}
+              className={navLinkClass(`deshboard/${user.role}`)}
+            >
               Dashboard
             </Link>
           )}
