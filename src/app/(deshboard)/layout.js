@@ -3,11 +3,11 @@ import React from "react";
 
 const DeshboardLayout = ({ children }) => {
   return (
-    <div className="flex items-center justify-between min-h-screen w-full">
-      <div className="flex flex-col items-center justify-center">
+    <div className="grid grid-cols-12 min-h-screen w-full">
+      <div className=" col-span-2 max-w-7xl mx-auto flex items-start justify-start">
         <DeshboardSidebar></DeshboardSidebar>
       </div>
-      <main className="p-5">{children}</main>
+      <main className="w-full bg-orange-500 col-span-10">{children}</main>
     </div>
   );
 };

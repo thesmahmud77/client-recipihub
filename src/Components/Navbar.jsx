@@ -41,8 +41,8 @@ const Navbar = () => {
           </Link>
           {user && (
             <Link
-              href={`/deshboard/${user.role}`}
-              className={navLinkClass(`deshboard/${user.role}`)}
+              href={`/${user.role}`}
+              className={navLinkClass(`/${user.role}`)}
             >
               Dashboard
             </Link>
