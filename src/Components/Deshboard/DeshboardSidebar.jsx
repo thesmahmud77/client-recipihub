@@ -1,6 +1,16 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
-import { House } from "@gravity-ui/icons";
+import {
+  Person,
+  Sparkles,
+  CirclePlus,
+  Receipt,
+  PersonMagnifier,
+  Circles3Plus,
+  Persons,
+  Comments,
+  CircleDollar,
+} from "@gravity-ui/icons";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -13,31 +23,31 @@ const DeshboardSidebar = () => {
   }
 
   const userItems = [
-    { icon: House, label: "Overview", href: "/user" },
-    { icon: House, label: "Profile", href: "/user/profile" },
-    { icon: House, label: "My Recipes", href: "/user/my-recipes" },
-    { icon: House, label: "Add Recipe", href: "/user/add-recipe" },
+    { icon: Circles3Plus, label: "Overview", href: "/user" },
+    { icon: Person, label: "Profile", href: "/user/profile" },
+    { icon: Sparkles, label: "My Recipes", href: "/user/my-recipes" },
+    { icon: CirclePlus, label: "Add Recipe", href: "/user/add-recipe" },
     {
-      icon: House,
+      icon: Receipt,
       label: "Purchased Recipe",
       href: "/user/purchased-recipe",
     },
   ];
   const adminItems = [
-    { icon: House, label: "Home", href: "admin" },
+    { icon: Circles3Plus, label: "Overview", href: "admin" },
     {
-      icon: House,
+      icon: Persons,
       label: "Manage Users",
       href: "admin/manage-user",
     },
     {
-      icon: House,
+      icon: PersonMagnifier,
       label: "Manage Recipes",
       href: "admin/manage-recipes",
     },
-    { icon: House, label: "Reports", href: "/admin/reports" },
+    { icon: Comments, label: "Reports", href: "/admin/reports" },
     {
-      icon: House,
+      icon: CircleDollar,
       label: "Transactions",
       href: "/admin/transactions",
     },
@@ -47,12 +57,12 @@ const DeshboardSidebar = () => {
 
   return (
     <div>
-      <aside className="flex flex-col gap-1">
+      <aside className="flex flex-col gap-1 border-2 px-2 py-2 border-gray-700/20 rounded min-h-screen">
         {activeNavItems.map((item) => (
           <Link
             key={item.label}
             href={item.href}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-foreground transition-colors hover:bg-default"
+            className="flex items-center gap-3 rounded-xl px-3 py-2.5"
             type="button"
           >
             <item.icon className="size-5 text-muted" />

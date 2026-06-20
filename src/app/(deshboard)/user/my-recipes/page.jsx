@@ -1,7 +1,9 @@
+import MyRecipesPage from "@/Components/Deshboard/user/MyRecipe/MyRecipesPage";
+
 const MyRecipePage = () => {
   return (
     <div>
-      <h1>My Recipe Page</h1>
+      <MyRecipesPage></MyRecipesPage>
     </div>
   );
 };
