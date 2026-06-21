@@ -23,7 +23,7 @@ const AdminOverview = () => {
   const premiumMembers = users.filter(
     (u) => u.isPremium || u.role === "premium",
   ).length;
-  const recentUsers = [...users].reverse().slice(0, 4); // সর্বশেষ ৪ জন ইউজার
+  const recentUsers = [...users].slice(0, 4); // সর্বশেষ ৪ জন ইউজার
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800">
