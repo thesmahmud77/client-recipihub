@@ -7,16 +7,18 @@ const DeshboardAvater = () => {
   const user = session?.user;
 
   return (
-    <div className="flex flex-col items-center gap-3 p-6 border border-gray-200 rounded-2xl w-fit">
+    <div className="flex flex-col items-center gap-3 p-6 border-2 border-gray-700/30 rounded-2xl w-[220px] ">
       {/* Avatar + Crown Badge */}
       <div className="relative">
-        <div className="w-20 h-20 rounded-full overflow-hidden border-3 border-amber-500">
+        <div className="w-35 h-35 rounded-full overflow-hidden border-5 border-amber-500">
           <img src={user?.image} alt="" />
         </div>
 
         {/* Crown Badge */}
         <div className="absolute bottom-0 right-0 w-6 h-6 px-3 py-3 bg-black rounded-full flex items-center justify-center border-3 border-white">
-          <span className="text-amber-600 text-xs">👑</span>
+          <div className="text-amber-600 py-1 px-3 bg-black rounded-2xl font-bold">
+            {user.role}
+          </div>
         </div>
       </div>
 

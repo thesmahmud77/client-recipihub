@@ -122,7 +122,7 @@ const AddRecipePage = () => {
     }
   };
   return (
-    <div className="mt-10 w-full">
+    <div className="mt-10 w-[1000px]">
       <h1 className="text-3xl font-bold">Add New Recipe</h1>
       <p>Share your Recipe to world</p>
       <div className="border-2 border-gray-500/20 p-5 rounded-2xl mt-10">
@@ -238,14 +238,14 @@ const AddRecipePage = () => {
                     key={level}
                     type="button"
                     onClick={() => setDifficulty(level)}
-                    className={`flex-1 py-2.5 text-xs font-semibold rounded-xl border transition-all text-black ${
+                    className={`flex-1 py-2.5 text-xs font-semibold rounded-xl border transition-all ${
                       difficulty === level
                         ? level === "Easy"
                           ? "bg-emerald-50 border-emerald-500 text-emerald-600"
                           : level === "Medium"
                             ? "bg-[#FFF3EB] border-[#FF7214] text-[#FF7214]"
                             : "bg-rose-50 border-rose-500 text-rose-600"
-                        : "bg-white border-[#E5DEC9]  hover:bg-gray-50 text-black"
+                        : "bg-white border-[#E5DEC9] text-black"
                     }`}
                   >
                     {level}

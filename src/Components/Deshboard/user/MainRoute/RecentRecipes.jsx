@@ -54,7 +54,7 @@ const RecentRecipes = () => {
     <div className="bg-white border border-gray-100 rounded-2xl p-5 w-full">
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg font-semibold">Recent Recipes</h2>
+        <h2 className="text-2xl font-bold text-black">Recent Recipes</h2>
         <Link
           href="/user/add-recipe"
           className="flex items-center gap-1.5 bg-orange-500 hover:bg-orange-600 text-white text-sm font-medium px-4 py-2 rounded-full transition-colors"
