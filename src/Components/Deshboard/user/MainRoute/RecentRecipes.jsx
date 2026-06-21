@@ -1,15 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "@/lib/auth-client";
 
 const RecentRecipes = () => {
+  const { data: session, isPending } = useSession();
+  const useremail = session?.user?.email;
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const res = await fetch("http://localhost:8080/all-recipes");
+        const res = await fetch(
+          `http://localhost:8080/my-recipes?email=${useremail}`,
+        );
         const data = await res.json();
         setRecipes(data);
       } catch (error) {
@@ -96,13 +101,11 @@ const RecentRecipes = () => {
               </td>
 
               {/* Cook Time */}
-              <td className="py-3.5 text-gray-500">
-                🕐 {recipe.preparationTime} min
-              </td>
+              <td className="py-3.5 text-gray-500">🕐 {recipe.prepTime} min</td>
 
               {/* Likes */}
-              <td className="py-3.5 text-orange-500 font-medium">
-                {recipe.likesCount}
+              <td className="py-3.5 text-orange-500 font-medium flex items-center justify-center gap-2">
+                ❤{recipe.likesCount}
               </td>
 
               {/* Status Badge */}

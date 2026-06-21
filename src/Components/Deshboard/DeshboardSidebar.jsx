@@ -1,7 +1,6 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
 import {
-  Person,
   Sparkles,
   CirclePlus,
   Receipt,
@@ -24,7 +23,6 @@ const DeshboardSidebar = () => {
 
   const userItems = [
     { icon: Circles3Plus, label: "Overview", href: "/user" },
-    { icon: Person, label: "Profile", href: "/user/profile" },
     { icon: Sparkles, label: "My Recipes", href: "/user/my-recipes" },
     { icon: CirclePlus, label: "Add Recipe", href: "/user/add-recipe" },
     {

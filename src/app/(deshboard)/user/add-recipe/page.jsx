@@ -122,7 +122,7 @@ const AddRecipePage = () => {
     }
   };
   return (
-    <div className="mt-10">
+    <div className="mt-10 w-full">
       <h1 className="text-3xl font-bold">Add New Recipe</h1>
       <p>Share your Recipe to world</p>
       <div className="border-2 border-gray-500/20 p-5 rounded-2xl mt-10">
@@ -152,7 +152,7 @@ const AddRecipePage = () => {
             <label className="text-sm font-bold text-[#2A1A12]">
               Recipe Image
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
               {/* ড্র্যাগ/ফাইল আপলোড এরিয়া */}
               <div className="md:col-span-2 text-white relative border-2 border-dashed border-[#E5DEC9] bg-[#FFFDFB] rounded-xl p-6 flex flex-col items-center justify-center text-center hover:border-[#FF7214] transition-all group">
                 <input
@@ -187,19 +187,6 @@ const AddRecipePage = () => {
                     Browse File
                   </span>
                 </div>
-              </div>
-
-              {/* অথবা ইমেজ ইউআরএল পেস্ট করার ফিল্ড */}
-              <div className="flex flex-col justify-center space-y-1.5 bg-[#FFFDFB] border border-[#F0E8E2] rounded-xl p-4">
-                <label className="text-xs font-semibold text-[#8A7970]">
-                  Or paste an image URL
-                </label>
-                <input
-                  type="url"
-                  placeholder="https://..."
-                  {...register("imageUrl")}
-                  className="w-full px-3 py-2 bg-white border border-[#F0E8E2] text-xs rounded-lg focus:outline-none focus:border-[#FF7214]"
-                />
               </div>
             </div>
           </div>
