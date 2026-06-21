@@ -1,47 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useSession } from "@/lib/auth-client";
 
 const MyRecipesPage = () => {
+  const { data: session, isPending } = useSession();
+  const useremail = session?.user?.email;
+
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const res = await fetch("http://localhost:8080/all-recipes");
-        const data = await res.json();
+    fetch(`http://localhost:8080/my-recipes?email=${useremail}`)
+      .then((res) => res.json())
+      .then((data) => {
         setRecipes(data);
-      } catch (error) {
-        console.error("Recipe fetch error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchRecipes();
-  }, []);
-
-  const handleDelete = async (id) => {
-    const confirmed = window.confirm("এই recipe টি delete করতে চান?");
-    if (!confirmed) return;
-
-    try {
-      await fetch(`http://localhost:8080/all-recipes/${id}`, {
-        method: "DELETE",
+        console.log(data);
       });
-      setRecipes((prev) => prev.filter((r) => r._id !== id));
-    } catch (error) {
-      console.error("Delete error:", error);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="p-6">
-        <p className="text-sm text-gray-400">Loading recipes...</p>
-      </div>
-    );
-  }
+  }, [useremail]);
 
   return (
     <div className="p-6">
@@ -121,24 +97,11 @@ const MyRecipesPage = () => {
                 {/* Likes */}
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-1.5 text-gray-600">
-                    <svg
-                      className="size-4 text-gray-400"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
-                      />
-                    </svg>
-                    {recipe.likesCount}
+                    :{recipe.likesCount || 0}
                   </div>
                 </td>
 
-                {/* Status Badge — Premium / Regular */}
+                {/* Status Badge */}
                 <td className="px-5 py-4">
                   {recipe.isFeatured ? (
                     <span className="bg-amber-500 text-white text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 w-fit">
@@ -151,10 +114,9 @@ const MyRecipesPage = () => {
                   )}
                 </td>
 
-                {/* Actions — View, Edit, Delete */}
+                {/* Actions */}
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-2">
-                    {/* View */}
                     <Link
                       href={`/recipes/${recipe._id}`}
                       className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-500"
@@ -179,7 +141,6 @@ const MyRecipesPage = () => {
                       </svg>
                     </Link>
 
-                    {/* Edit */}
                     <Link
                       href={`/dashboard/user/edit-recipe/${recipe._id}`}
                       className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-gray-500"
@@ -199,7 +160,6 @@ const MyRecipesPage = () => {
                       </svg>
                     </Link>
 
-                    {/* Delete */}
                     <button
                       onClick={() => handleDelete(recipe._id)}
                       className="w-8 h-8 flex items-center justify-center border border-red-200 rounded-lg hover:bg-red-50 transition-colors text-red-400"
@@ -230,7 +190,7 @@ const MyRecipesPage = () => {
           <div className="text-center py-12">
             <p className="text-gray-400 text-sm mb-3">কোনো recipe নেই।</p>
             <Link
-              href="/dashboard/user/add-recipe"
+              href="/user/add-recipe"
               className="text-orange-500 text-sm font-medium underline"
             >
               নতুন recipe যোগ করুন
