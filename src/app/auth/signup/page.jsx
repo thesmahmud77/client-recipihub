@@ -280,7 +280,7 @@ const SignupPage = () => {
         <p className="text-center text-sm text-[#8A7970] mt-6">
           Already have an account?{" "}
           <Link
-            href="/auth/login"
+            href="/auth/signin"
             className="text-[#FF7214] font-bold hover:underline"
           >
             Login here

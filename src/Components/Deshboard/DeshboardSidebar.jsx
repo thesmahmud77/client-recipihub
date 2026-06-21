@@ -33,7 +33,7 @@ const DeshboardSidebar = () => {
     },
   ];
   const adminItems = [
-    { icon: Circles3Plus, label: "Overview", href: "admin" },
+    { icon: Circles3Plus, label: "Overview", href: "/admin" },
     {
       icon: Persons,
       label: "Manage Users",

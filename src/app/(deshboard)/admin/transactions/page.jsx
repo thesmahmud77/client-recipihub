@@ -1,9 +1,7 @@
+import React from "react";
+
 const TransactionPage = () => {
-  return (
-    <div>
-      <h1>Transaction page</h1>
-    </div>
-  );
+  return <div></div>;
 };
 
 export default TransactionPage;

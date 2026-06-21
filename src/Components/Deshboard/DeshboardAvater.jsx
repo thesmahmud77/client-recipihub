@@ -1,10 +1,15 @@
 "use client";
 import { useSession } from "@/lib/auth-client";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 const DeshboardAvater = () => {
   const { data: session } = useSession();
   const user = session?.user;
+
+  if (!user) {
+    redirect("/auth/signin");
+  }
 
   return (
     <div className="flex flex-col items-center gap-3 p-6 border-2 border-gray-700/30 rounded-2xl w-[220px] ">
