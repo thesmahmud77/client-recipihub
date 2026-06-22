@@ -5,7 +5,6 @@ import React, { useState, useEffect } from "react";
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
 
-  // ১. এপিআই থেকে সরাসরি ইউজারের ডেটা ফেচ করা
   useEffect(() => {
     fetch("http://localhost:8080/user")
       .then((res) => res.json())
@@ -14,9 +13,8 @@ const ManageUsers = () => {
   }, []);
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800">
+    <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* টাইটেল পার্ট */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Manage Users</h1>
           <p className="text-sm text-gray-500 mt-0.5">
@@ -24,7 +22,6 @@ const ManageUsers = () => {
           </p>
         </div>
 
-        {/* ইউজার ডেটা টেবিল কার্ড */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -40,13 +37,6 @@ const ManageUsers = () => {
               </thead>
               <tbody className="divide-y divide-gray-50 text-sm">
                 {users.map((user, idx) => {
-                  // রোল এবং প্রিমিয়াম চেক করার কন্ডিশন
-                  const isAdmin = user.role?.toLowerCase() === "admin";
-                  const isPremiumUser =
-                    user.isPremium || user.role?.toLowerCase() === "premium";
-                  const isBlockedUser =
-                    user.status?.toLowerCase() === "blocked" || user.isBlocked;
-
                   return (
                     <tr
                       key={user._id || idx}

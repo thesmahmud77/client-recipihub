@@ -14,7 +14,7 @@ const ManageRecipes = () => {
   }, []);
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800">
+    <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* টাইটেল পার্ট */}
         <div>

@@ -26,7 +26,7 @@ const AdminOverview = () => {
   const recentUsers = [...users].slice(0, 4); // সর্বশেষ ৪ জন ইউজার
 
   return (
-    <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800">
+    <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* হেডার */}
         <div className="flex justify-between items-center">

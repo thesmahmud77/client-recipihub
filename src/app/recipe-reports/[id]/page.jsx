@@ -50,6 +50,7 @@ const ReportRecipePage = ({ recipe }) => {
       reason: formData.reason,
       description: formData.description,
       reportedAt: new Date(),
+      status: "pending",
     };
     console.log(reportData);
 
@@ -73,7 +74,6 @@ const ReportRecipePage = ({ recipe }) => {
         Swal.fire({
           icon: "warning",
           title: "Report Not Submited",
-          //   text: "রিপোর্ট জমা নেওয়া যায়নি।",
           confirmButtonColor: "#f59e0b",
         });
       }
@@ -82,7 +82,6 @@ const ReportRecipePage = ({ recipe }) => {
       Swal.fire({
         icon: "error",
         title: "Server Error",
-        // text: "সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না।",
         confirmButtonColor: "#ef4444",
       });
     } finally {
@@ -104,7 +103,6 @@ const ReportRecipePage = ({ recipe }) => {
           </p>
         </div>
 
-        {/* মেইন ২-কলাম গ্রিড লেআউট */}
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           {/* LEFT SIDE: Report Recipe Details (40% width on desktop) */}
           <div className="md:col-span-5 bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-xs">
@@ -114,7 +112,7 @@ const ReportRecipePage = ({ recipe }) => {
                 alt={activeRecipe.recipeName || "Recipe Image"}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  e.target.src = "https://placehold.co/600x400"; // ✅ image load না হলে fallback
+                  e.target.src = "https://placehold.co/600x400";
                 }}
               />
               {activeRecipe.category && (
