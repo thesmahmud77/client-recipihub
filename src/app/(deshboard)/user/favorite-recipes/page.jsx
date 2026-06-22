@@ -36,7 +36,7 @@ const SavedFavoritesPage = () => {
   }
 
   return (
-    <div className="bg-[#FAF6F0] min-h-screen py-8 text-gray-800 max-w-6xl mx-auto px-4 space-y-6">
+    <div className="bg-[#FAF6F0] min-h-screen py-8 text-gray-800 max-w-6xl mx-auto px-4 space-y-6 w-[1000px]">
       {/* হেডার */}
       <div className="border-b border-gray-200 pb-4">
         <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900">

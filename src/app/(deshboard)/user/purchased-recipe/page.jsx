@@ -1,6 +1,6 @@
 const PurchasedRecipePage = () => {
   return (
-    <div>
+    <div className="w-[1000px]">
       <h1>pURCHASED Recipe Page</h1>
     </div>
   );

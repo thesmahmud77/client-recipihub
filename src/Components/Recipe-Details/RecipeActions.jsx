@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ShoppingCart, NodesRight } from "@gravity-ui/icons";
 import { useSession } from "@/lib/auth-client";
 import Swal from "sweetalert2";
+import Link from "next/link";
 
 const RecipeActions = ({ recipe }) => {
   const [loading, setLoading] = useState(false);
@@ -72,8 +73,8 @@ const RecipeActions = ({ recipe }) => {
       } else {
         Swal.fire({
           icon: "warning",
-          title: "ব্যর্থ হয়েছে!",
-          text: data.message || "কিছু একটা সমস্যা হয়েছে।",
+          title: "Recipe Not Added",
+          text: data.message || "You Geting Wrong",
           confirmButtonColor: "#f59e0b",
         });
       }
@@ -81,9 +82,9 @@ const RecipeActions = ({ recipe }) => {
       console.error("Error saving favorite recipe:", error);
 
       Swal.fire({
-        icon: "error",
-        title: "ব্যর্থ হয়েছে!",
-        text: "সার্ভারের সাথে যোগাযোগ করা যাচ্ছে না।",
+        icon: "warning",
+        title: "Recipe Not Added",
+        text: data.message || "You Geting Wrong",
         confirmButtonColor: "#f59e0b",
       });
     }
@@ -126,10 +127,13 @@ const RecipeActions = ({ recipe }) => {
       </button>
 
       {/* 5. Report Button */}
-      <button className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-500 text-xs md:text-sm font-semibold rounded-xl px-4 py-3 border border-red-100/70 transition-colors cursor-pointer sm:ml-auto">
+      <Link
+        href={`/recipe-reports/${recipe._id}`}
+        className="flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-500 text-xs md:text-sm font-semibold rounded-xl px-4 py-3 border border-red-100/70 transition-colors cursor-pointer sm:ml-auto"
+      >
         <span>⚠️</span>
         <span>Report</span>
-      </button>
+      </Link>
     </div>
   );
 };
