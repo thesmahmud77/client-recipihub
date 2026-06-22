@@ -9,6 +9,7 @@ import {
   Persons,
   Comments,
   CircleDollar,
+  BookmarkFill,
 } from "@gravity-ui/icons";
 import Link from "next/link";
 import { redirect, usePathname } from "next/navigation";
@@ -30,6 +31,11 @@ const DeshboardSidebar = () => {
       icon: Receipt,
       label: "Purchased Recipe",
       href: "/user/purchased-recipe",
+    },
+    {
+      icon: BookmarkFill,
+      label: "Favorite Recipes",
+      href: "/user/favorite-recipes",
     },
   ];
   const adminItems = [
