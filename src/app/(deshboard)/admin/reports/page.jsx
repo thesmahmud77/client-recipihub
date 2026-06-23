@@ -1,24 +1,23 @@
 "use client";
 
+import { TrashBin } from "@gravity-ui/icons";
 import React, { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 
 const RecipeReportsPage = () => {
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("Pending"); // Pending, Dismissed, All
+  const [activeTab, setActiveTab] = useState("Pending");
 
-  // ১. আপনার দেওয়া নতুন API এন্ডপয়েন্ট থেকে ডাটা ফেচ করা
+  // ১. ডাটা ফেচ করা
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/recipe-reports", {
-        cache: "no-cache",
-      });
+      const res = await fetch("http://localhost:8080/recipe-reports");
       const data = await res.json();
       setReports(data);
     } catch (error) {
-      console.error("Error fetching reports:", error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -28,122 +27,102 @@ const RecipeReportsPage = () => {
     fetchReports();
   }, []);
 
-  // ২. রিজন অনুযায়ী ব্যাজের কালার ডাইনামিক করার লজিক
-  const getReasonStyles = (reason) => {
-    switch (reason) {
-      case "Offensive Content":
-        return "bg-red-50 text-red-500 border border-red-200";
-      case "Spam":
-        return "bg-orange-50 text-orange-500 border border-orange-200";
-      case "Copyright Issue":
-        return "bg-purple-50 text-purple-500 border border-purple-200";
-      default:
-        return "bg-gray-50 text-gray-500 border border-gray-200";
-    }
-  };
-
-  // ৩. অ্যাকশন: Remove Recipe (ডাটাবেজ থেকে রেসিপি ও রিপোর্ট রিমুভ করবে)
-  const handleRemoveRecipe = async (id, recipeId) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "This recipe will be permanently deleted!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: "Remove Recipe",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await fetch(
-            `http://localhost:8080/recipe-reports/${id}?recipeId=${recipeId}`,
-            {
-              method: "DELETE",
-            },
-          );
-          if (res.ok) {
-            Swal.fire(
-              "Removed!",
-              "Recipe and report have been handled.",
-              "success",
-            );
-            fetchReports(); // টেবিল ডাটা রিফ্রেশ
-          }
-        } catch (error) {
-          Swal.fire("Error", "Failed to remove recipe.", "error");
-        }
-      }
-    });
-  };
-
-  // ৪. অ্যাকশন: Dismiss Report (স্ট্যাটাস চেঞ্জ করে 'dismissed' করবে)
-  const handleDismissReport = async (id) => {
+  const handleRemoveRecipe = async (reportId) => {
     try {
       const res = await fetch(
-        `http://localhost:8080/recipe-reports/dismiss/${id}`,
-        {
-          method: "PATCH",
-        },
+        `http://localhost:8080/reports-delete/${reportId}`,
+        { method: "DELETE" },
       );
-      if (res.ok) {
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
         Swal.fire({
           icon: "success",
-          title: "Report Dismissed",
+          title: data.message,
           timer: 1500,
           showConfirmButton: false,
         });
-        fetchReports(); // টেবিল ডাটা রিফ্রেশ
+        fetchReports();
+      } else {
+        Swal.fire("Error", data.message || "Failed to delete", "error");
       }
     } catch (error) {
-      console.error("Error dismissing report:", error);
+      Swal.fire("Error", "Cannot connect to server!", "error");
     }
   };
 
-  // ৫. ডাটাবেজের status: "pending" বা "dismissed" ভ্যালুর ওপর বেস করে ফিল্টারিং
+  const handleDismissReport = async (id, newStatus) => {
+    console.log(id);
+    try {
+      const res = await fetch(
+        `http://localhost:8080/recipe-reports-update/${id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ status: newStatus }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        Swal.fire({
+          icon: "success",
+          title: data.message,
+          timer: 1500,
+          showConfirmButton: false,
+        });
+
+        fetchReports();
+      } else {
+        Swal.fire("Error", data.message || "Failed to update", "error");
+      }
+    } catch (error) {
+      console.error("Update error:", error);
+      Swal.fire("Error", "Something went wrong with the network!", "error");
+    }
+  };
+
+  // ৪. ফিল্টারিং লজিক
   const filteredReports = reports.filter((report) => {
     const status = report.status?.toLowerCase();
     if (activeTab === "Pending") return status === "pending" || !status;
     if (activeTab === "Dismissed") return status === "dismissed";
-    return true; // All
+    return true;
   });
 
-  if (loading) {
-    return (
-      <div className="text-center py-20 text-gray-500 font-medium">
-        Loading reports...
-      </div>
-    );
-  }
+  if (loading)
+    return <div className="text-center py-20 text-sm">Loading...</div>;
 
   return (
-    <div className="bg-[#FAF6F0] min-h-screen p-6 md:p-10 text-gray-800">
+    <div className="bg-[#FAF6F0] min-h-screen p-6 text-gray-800 w-[1000px]">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* টপ বার: টাইটেল ও ফিল্টার ট্যাব */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* হেডার ও ট্যাব */}
+        <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-extrabold text-gray-950">
-              Recipe Reports
-            </h1>
+            <h1 className="text-2xl font-black">Recipe Reports</h1>
             <p className="text-xs text-gray-400 mt-0.5">
               {
                 reports.filter(
                   (r) => r.status?.toLowerCase() === "pending" || !r.status,
                 ).length
               }{" "}
-              pending reports
+              pending
             </p>
           </div>
 
-          {/* ট্যাব বাটন গ্রুপ */}
-          <div className="flex items-center gap-2 bg-white p-1 rounded-xl border border-gray-200/60 shadow-xs">
+          <div className="flex gap-1 bg-white p-1 rounded-xl border border-gray-200 shadow-xs text-xs font-bold">
             {["Pending", "Dismissed", "All"].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                className={`px-4 py-1.5 rounded-lg cursor-pointer ${
                   activeTab === tab
-                    ? "bg-orange-500 text-white shadow-xs"
-                    : "text-gray-500 hover:text-gray-800"
+                    ? "bg-orange-500 text-white"
+                    : "text-gray-500"
                 }`}
               >
                 {tab}
@@ -152,84 +131,62 @@ const RecipeReportsPage = () => {
           </div>
         </div>
 
-        {/* টেবিল লেআউট */}
-        <div className="overflow-x-auto rounded-2xl border border-gray-200/50 bg-white shadow-xs">
-          <table className="w-full text-left border-collapse">
+        {/* টেবিল */}
+        <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-xs text-xs">
+          <table className="w-full text-left">
             <thead>
-              <tr className="bg-[#FAF6F0]/60 text-gray-400 text-[11px] font-extrabold uppercase tracking-wider border-b border-gray-100">
-                <th className="py-4 px-5">Recipe ID</th>
-                <th className="py-4 px-5">Reporter</th>
-                <th className="py-4 px-5">Reason</th>
-
-                <th className="py-4 px-5">Reported</th>
-                <th className="py-4 px-5 text-center">Actions</th>
+              <tr className="bg-[#FAF6F0]/60 text-gray-400 font-bold border-b border-gray-100">
+                <th className="p-4">Recipe ID</th>
+                <th className="p-4">Reporter</th>
+                <th className="p-4">Reason</th>
+                <th className="p-4">Description</th>
+                <th className="p-4">Reported</th>
+                <th className="p-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 text-xs text-gray-700">
-              {filteredReports.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan="6"
-                    className="text-center py-12 text-gray-400 font-medium"
-                  >
-                    No reports found in this section.
+            <tbody className="divide-y divide-gray-100">
+              {filteredReports.map((report) => (
+                <tr key={report._id} className="hover:bg-gray-50/50">
+                  <td className="p-4 text-gray-400 font-medium">
+                    {report.recipeId}
+                  </td>
+                  <td className="p-4 font-semibold text-orange-600">
+                    {report.reporter}
+                  </td>
+                  <td className="p-4">
+                    <span className="bg-orange-50 text-orange-500 border border-orange-100 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                      {report.reason}
+                    </span>
+                  </td>
+                  <td className="p-4 text-gray-500 max-w-xs truncate">
+                    {report.description || "—"}
+                  </td>
+                  <td className="p-4 text-gray-500">
+                    {report.reportedAt
+                      ? new Date(report.reportedAt).toLocaleDateString("en-GB")
+                      : "—"}
+                  </td>
+                  <td className="p-4 flex items-center justify-center gap-2 font-bold">
+                    <button
+                      onClick={() =>
+                        handleRemoveRecipe(report._id, report.recipeId)
+                      }
+                      className="border border-red-200 text-red-500 px-3 py-1.5 rounded-xl hover:bg-red-50 cursor-pointer flex items-center justify-center gap-1"
+                    >
+                      <TrashBin></TrashBin> Remove
+                    </button>
+                    <button
+                      onClick={() =>
+                        handleDismissReport(report._id, "dismissed")
+                      }
+                      disabled={report.status?.toLowerCase() === "dismissed"}
+                      className="border border-gray-200 text-gray-500 px-3 py-1.5 rounded-xl hover:bg-gray-50 cursor-pointer disabled:opacity-40"
+                    >
+                      Dismiss
+                    </button>
                   </td>
                 </tr>
-              ) : (
-                filteredReports.map((report) => (
-                  <tr
-                    key={report._id}
-                    className="hover:bg-gray-50/40 transition-colors"
-                  >
-                    {/* Recipe ID */}
-                    <td className="py-4 px-5 font-medium text-gray-400 truncate max-w-[120px]">
-                      {report.recipeId}
-                    </td>
-
-                    {/* Reporter */}
-                    <td className="py-4 px-5 font-semibold text-orange-600/90">
-                      {report.reporter}
-                    </td>
-
-                    {/* Reason Badge */}
-                    <td className="py-4 px-5">
-                      <span
-                        className={`px-3 py-0.5 rounded-full text-[10px] font-bold ${getReasonStyles(report.reason)}`}
-                      >
-                        {report.reason}
-                      </span>
-                    </td>
-
-                    {/* Reported Date */}
-                    <td className="py-4 px-5 text-gray-500">
-                      {report.reportedAt
-                        ? new Date(report.reportedAt).toLocaleDateString(
-                            "en-GB",
-                          )
-                        : "—"}
-                    </td>
-
-                    {/* Actions */}
-                    <td className="py-4 px-5 flex items-center justify-center gap-2">
-                      <button
-                        onClick={() =>
-                          handleRemoveRecipe(report._id, report.recipeId)
-                        }
-                        className="flex items-center gap-1.5 border border-red-200 text-red-500 font-bold px-3 py-1.5 rounded-xl hover:bg-red-50 transition-colors cursor-pointer"
-                      >
-                        <span>🗑️</span> Remove Recipe
-                      </button>
-                      <button
-                        onClick={() => handleDismissReport(report._id)}
-                        disabled={report.status?.toLowerCase() === "dismissed"}
-                        className="border border-gray-200 text-gray-600 font-bold px-3 py-1.5 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer disabled:opacity-50"
-                      >
-                        Dismiss
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>

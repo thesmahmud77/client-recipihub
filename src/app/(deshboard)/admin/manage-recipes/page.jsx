@@ -1,17 +1,72 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 const ManageRecipes = () => {
   const [recipes, setRecipes] = useState([]);
 
-  // ১. এপিআই থেকে সরাসরি রেসিপি ডেটা ফেচ করা
-  useEffect(() => {
+  // ১. সব রেসিপি ফেচ করার ফাংশন
+  const fetchRecipes = () => {
     fetch("http://localhost:8080/all-recipes")
       .then((res) => res.json())
       .then((data) => setRecipes(data))
       .catch((err) => console.error("Error fetching recipes:", err));
+  };
+
+  useEffect(() => {
+    fetchRecipes();
   }, []);
+
+  // ২. আইডি দিয়ে সরাসরি রেসিপি ডিলিট করার হ্যান্ডলার
+  const handleDeleteRecipe = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#6b7280",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            Swal.fire("Deleted!", "Recipe has been deleted.", "success");
+            fetchRecipes(); // টেবিল ডাটা রিফ্রেশ
+          }
+        } catch (err) {
+          Swal.fire("Error", "Failed to delete recipe.", "error");
+        }
+      }
+    });
+  };
+
+  // ৩. ফিচার্ড স্ট্যাটাস (Feature / Unfeature) টগল করার হ্যান্ডলার
+  const handleToggleFeatured = async (id, currentStatus) => {
+    try {
+      const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isFeatured: !currentStatus }),
+      });
+
+      if (res.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Status Updated",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        fetchRecipes(); // টেবিল ডাটা রিফ্রেশ
+      }
+    } catch (err) {
+      console.error("Error updating featured status:", err);
+    }
+  };
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
@@ -48,17 +103,22 @@ const ManageRecipes = () => {
                       key={recipe._id || idx}
                       className="hover:bg-gray-50/50 transition-colors"
                     >
-                      {/* RECIPE: ইমেজ এবং নাম */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           {recipe.image || recipe.recipeImage ? (
-                            <img
-                              src={recipe.image || recipe.recipeImage}
-                              alt=""
-                              className="w-12 h-10 rounded-xl object-cover bg-gray-50"
-                            />
+                            /* ✅ ফিক্সড: activeRecipe পরিবর্তন করে recipe করা হয়েছে এবং সুন্দর স্ট্রাকচার দেওয়া হয়েছে */
+                            <div className="w-12 h-10 rounded-xl overflow-hidden flex-shrink-0">
+                              <img
+                                src={recipe.image || recipe.recipeImage}
+                                alt={recipe.recipeName || "Recipe Image"}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.src = "https://placehold.co/600x400"; // image load না হলে fallback
+                                }}
+                              />
+                            </div>
                           ) : (
-                            <div className="w-12 h-10 rounded-xl bg-orange-100 text-[#EA580C] font-bold flex items-center justify-center text-xs">
+                            <div className="w-12 h-10 rounded-xl bg-orange-100 text-[#EA580C] font-bold flex items-center justify-center text-xs flex-shrink-0">
                               🍳
                             </div>
                           )}
@@ -70,19 +130,16 @@ const ManageRecipes = () => {
                         </div>
                       </td>
 
-                      {/* AUTHOR */}
                       <td className="py-4 px-6 text-gray-500 font-medium">
                         {recipe.author || recipe.authorName || "Anonymous"}
                       </td>
 
-                      {/* CATEGORY Badge */}
                       <td className="py-4 px-6">
                         <span className="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-orange-50 text-orange-600 border border-orange-100 uppercase tracking-wide">
                           {recipe.category || "General"}
                         </span>
                       </td>
 
-                      {/* FEATURED Status Badge */}
                       <td className="py-4 px-6">
                         <span
                           className={`text-xs px-2.5 py-1 rounded-full font-medium ${
@@ -95,16 +152,23 @@ const ManageRecipes = () => {
                         </span>
                       </td>
 
-                      {/* ACTIONS Buttons */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
                           {/* Feature/Unfeature Button */}
-                          <button className="text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-xl font-medium border border-gray-200 text-gray-600 transition-colors">
+                          <button
+                            onClick={() =>
+                              handleToggleFeatured(recipe._id, isFeatured)
+                            }
+                            className="text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-xl font-medium border border-gray-200 text-gray-600 transition-colors cursor-pointer"
+                          >
                             {isFeatured ? "Unfeature" : "Feature"}
                           </button>
 
                           {/* Delete Button */}
-                          <button className="text-xs px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl font-semibold transition-colors">
+                          <button
+                            onClick={() => handleDeleteRecipe(recipe._id)}
+                            className="text-xs px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl font-semibold transition-colors cursor-pointer"
+                          >
                             Delete
                           </button>
                         </div>

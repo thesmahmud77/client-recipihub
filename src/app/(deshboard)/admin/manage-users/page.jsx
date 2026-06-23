@@ -5,12 +5,39 @@ import React, { useState, useEffect } from "react";
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
 
-  useEffect(() => {
+  // ১. সব ইউজার ফেচ করার ফাংশন
+  const fetchUsers = () => {
     fetch("http://localhost:8080/user")
       .then((res) => res.json())
       .then((data) => setUsers(data))
       .catch((err) => console.error("Error fetching users:", err));
+  };
+
+  useEffect(() => {
+    fetchUsers();
   }, []);
+
+  const handleToggleBlock = async (id, currentStatus) => {
+    const isCurrentlyBlocked =
+      currentStatus?.toLowerCase() === "blocked" ||
+      currentStatus?.toLowerCase() === "inactive";
+
+    try {
+      const res = await fetch(`http://localhost:8080/user/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          status: isCurrentlyBlocked ? "active" : "inactive",
+        }),
+      });
+
+      if (res.ok) {
+        fetchUsers();
+      }
+    } catch (err) {
+      console.error("Error updating user status:", err);
+    }
+  };
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
@@ -37,6 +64,15 @@ const ManageUsers = () => {
               </thead>
               <tbody className="divide-y divide-gray-50 text-sm">
                 {users.map((user, idx) => {
+                  const isAdmin = user.role?.toLowerCase() === "admin";
+                  const isPremiumUser =
+                    user.isPremium || user.membership === "premium";
+
+                  // "blocked" অথবা "inactive" থাকলে সেটাকে ব্লক হিসেবে বিবেচনা করা হবে
+                  const isBlockedUser =
+                    user.status?.toLowerCase() === "blocked" ||
+                    user.status?.toLowerCase() === "inactive";
+
                   return (
                     <tr
                       key={user._id || idx}
@@ -100,7 +136,7 @@ const ManageUsers = () => {
                               : "bg-emerald-50 text-emerald-600"
                           }`}
                         >
-                          {isBlockedUser ? "Blocked" : "Active"}
+                          {isBlockedUser ? "Inactive" : "Active"}
                         </span>
                       </td>
 
@@ -112,7 +148,10 @@ const ManageUsers = () => {
                       {/* ACTIONS Button */}
                       <td className="py-4 px-6">
                         <button
-                          className={`text-xs px-4 py-1.5 rounded-xl font-semibold transition-colors ${
+                          onClick={() =>
+                            handleToggleBlock(user._id, user.status)
+                          }
+                          className={`text-xs px-4 py-1.5 rounded-xl font-semibold transition-colors cursor-pointer ${
                             isBlockedUser
                               ? "bg-emerald-500 text-white hover:bg-emerald-600"
                               : "bg-red-50 text-red-500 hover:bg-red-100"
