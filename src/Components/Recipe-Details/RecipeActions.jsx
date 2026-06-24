@@ -96,13 +96,21 @@ const RecipeActions = ({ recipe }) => {
   return (
     <div className="flex flex-wrap items-center gap-2.5 bg-white p-4 rounded-xl border border-gray-100 shadow-xs">
       {/* 1. Purchase Button */}
-      <button className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-xs md:text-sm font-semibold rounded-xl px-5 py-3 transition-colors cursor-pointer">
-        <ShoppingCart className="w-4 h-4" />
-        <span>Purchase Recipe</span>
-        <span className="bg-white/20 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-md ml-0.5">
-          $4.99
-        </span>
-      </button>
+      <form action="/api/checkout_sessions" method="POST">
+        <section>
+          <button
+            type="submit"
+            role="link"
+            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white text-xs md:text-sm font-semibold rounded-xl px-5 py-3 transition-colors cursor-pointer"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            <span>Purchase Recipe</span>
+            <span className="bg-white/20 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-md ml-0.5">
+              $19.00
+            </span>
+          </button>
+        </section>
+      </form>
 
       {/* 2. Like Button */}
       <button className="flex items-center gap-1.5 bg-gray-50 hover:bg-gray-100 text-gray-700 text-xs md:text-sm font-medium rounded-xl px-4 py-3 border border-gray-200/60 transition-colors cursor-pointer">
