@@ -10,7 +10,7 @@ const ManageRecipes = () => {
   const fetchRecipes = () => {
     fetch("http://localhost:8080/all-recipes")
       .then((res) => res.json())
-      .then((data) => setRecipes(data))
+      .then((data) => setRecipes(data)) // ✅ এখানে setRecipes ফিক্স করা হয়েছে
       .catch((err) => console.error("Error fetching recipes:", err));
   };
 
@@ -26,19 +26,20 @@ const ManageRecipes = () => {
       });
       if (res.ok) {
         Swal.fire("Deleted!", "Recipe has been deleted.", "success");
-        fetchRecipes();
+        fetchRecipes(); // টেবিল ডাটা রিফ্রেশ
       }
     } catch (err) {
       Swal.fire("Error", "Failed to delete recipe.", "error");
     }
   };
 
+  // ৩. Feature / Unfeature স্ট্যাটাস টগল করার হ্যান্ডলার
   const handleToggleFeatured = async (id, currentStatus) => {
     try {
       const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isFeatured: !currentStatus }),
+        body: JSON.stringify({ isFeatured: !currentStatus }), // বর্তমান স্ট্যাটাসের বিপরীত (true/false) পাঠাবে
       });
 
       if (res.ok) {
@@ -93,14 +94,13 @@ const ManageRecipes = () => {
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           {recipe.image || recipe.recipeImage ? (
-                            /* ✅ ফিক্সড: activeRecipe পরিবর্তন করে recipe করা হয়েছে এবং সুন্দর স্ট্রাকচার দেওয়া হয়েছে */
                             <div className="w-12 h-10 rounded-xl overflow-hidden flex-shrink-0">
                               <img
                                 src={recipe.image || recipe.recipeImage}
                                 alt={recipe.recipeName || "Recipe Image"}
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
-                                  e.target.src = "https://placehold.co/600x400"; // image load না হলে fallback
+                                  e.target.src = "https://placehold.co/600x400";
                                 }}
                               />
                             </div>

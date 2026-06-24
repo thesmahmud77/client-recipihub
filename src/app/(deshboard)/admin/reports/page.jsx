@@ -27,33 +27,37 @@ const RecipeReportsPage = () => {
     fetchReports();
   }, []);
 
-  const handleRemoveRecipe = async (reportId) => {
+  // ২. রেসিপি রিপোর্ট ডিলিট করা ফাংশন
+  const handleRemoveRecipe = async (reportMongoId) => {
     try {
+      // সরাসরি সঠিক ব্যাকঅ্যান্ড এপিআই পাথে রিকোয়েস্ট পাঠানো
       const res = await fetch(
-        `http://localhost:8080/reports-delete/${reportId}`,
-        { method: "DELETE" },
+        `http://localhost:8080/report-delete-from-admin/${reportMongoId}`,
+        {
+          method: "DELETE",
+        },
       );
 
-      const data = await res.json();
-
-      if (res.ok && data.success) {
+      if (res.ok) {
         Swal.fire({
           icon: "success",
-          title: data.message,
+          title: "Deleted!",
+          text: "Report has been deleted successfully.",
           timer: 1500,
           showConfirmButton: false,
         });
-        fetchReports();
+        fetchReports(); // টেবিল ডাটা রিফ্রেশ
       } else {
-        Swal.fire("Error", data.message || "Failed to delete", "error");
+        Swal.fire("Error", "Failed to delete from server.", "error");
       }
-    } catch (error) {
-      Swal.fire("Error", "Cannot connect to server!", "error");
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong with the network!", "error");
     }
   };
 
+  // ৩. রিপোর্ট ডিসমিস করা ফাংশন
   const handleDismissReport = async (id, newStatus) => {
-    console.log(id);
     try {
       const res = await fetch(
         `http://localhost:8080/recipe-reports-update/${id}`,
@@ -71,7 +75,7 @@ const RecipeReportsPage = () => {
       if (res.ok && data.success) {
         Swal.fire({
           icon: "success",
-          title: data.message,
+          title: data.message || "Dismissed Successfully",
           timer: 1500,
           showConfirmButton: false,
         });
@@ -168,12 +172,10 @@ const RecipeReportsPage = () => {
                   </td>
                   <td className="p-4 flex items-center justify-center gap-2 font-bold">
                     <button
-                      onClick={() =>
-                        handleRemoveRecipe(report._id, report.recipeId)
-                      }
+                      onClick={() => handleRemoveRecipe(report._id)} // ✅ এখানে শুধুমাত্র মঙ্গোডিবি আইডি পাঠানো হচ্ছে
                       className="border border-red-200 text-red-500 px-3 py-1.5 rounded-xl hover:bg-red-50 cursor-pointer flex items-center justify-center gap-1"
                     >
-                      <TrashBin></TrashBin> Remove
+                      <TrashBin /> Remove
                     </button>
                     <button
                       onClick={() =>

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import Swal from "sweetalert2";
 
 const MyRecipesPage = () => {
   const { data: session, isPending } = useSession();
@@ -18,6 +19,32 @@ const MyRecipesPage = () => {
         console.log(data);
       });
   }, [useremail]);
+
+  const handleDelete = async (id) => {
+    try {
+      const resDelete = await fetch(
+        `http://localhost:8080/recipe-delete-from-own-email/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (resDelete) {
+        Swal.fire({
+          icon: "success",
+          title: "Deleted!",
+          text: "Report has been deleted successfully.",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } else {
+        Swal.fire("Error", "Failed to delete from server.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong with the network!", "error");
+    }
+  };
 
   return (
     <div className="p-6 w-[1000px]">

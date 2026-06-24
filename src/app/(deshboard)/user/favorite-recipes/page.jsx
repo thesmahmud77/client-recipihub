@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import Swal from "sweetalert2";
 
 const SavedFavoritesPage = () => {
   const { data: session, isPending } = useSession();
@@ -34,6 +35,33 @@ const SavedFavoritesPage = () => {
       </div>
     );
   }
+
+  const handleRemoveToFav = async (id) => {
+    // console.log(id);
+    try {
+      const resDelete = await fetch(
+        `http://localhost:8080/remove-to-fav/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
+
+      if (resDelete) {
+        Swal.fire({
+          icon: "success",
+          title: "Remove",
+          text: "Remove Recipe from your Fav List",
+          timer: 1500,
+          showConfirmButton: false,
+        });
+      } else {
+        Swal.fire("Error", "Failed to delete from server.", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong with the network!", "error");
+    }
+  };
 
   return (
     <div className="bg-[#FAF6F0] min-h-screen py-8 text-gray-800 max-w-6xl mx-auto px-4 space-y-6 w-[1000px]">
@@ -97,7 +125,10 @@ const SavedFavoritesPage = () => {
                   >
                     View Details
                   </Link>
-                  <button className="py-2 px-3 flex items-center justify-center border border-red-200 text-red-500 text-xs font-bold rounded-xl hover:bg-red-50 transition-colors cursor-pointer">
+                  <button
+                    onClick={() => handleRemoveToFav(recipe._id)}
+                    className="py-2 px-3 flex items-center justify-center border border-red-200 text-red-500 text-xs font-bold rounded-xl hover:bg-red-50 transition-colors cursor-pointer"
+                  >
                     Remove
                   </button>
                 </div>

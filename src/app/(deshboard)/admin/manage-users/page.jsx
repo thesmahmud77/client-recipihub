@@ -1,164 +1,194 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
-const ManageUsers = () => {
-  const [users, setUsers] = useState([]);
+const ManageRecipes = () => {
+  const [recipes, setRecipes] = useState([]);
 
-  // ১. সব ইউজার ফেচ করার ফাংশন
-  const fetchUsers = () => {
-    fetch("http://localhost:8080/user")
+  // ১. সব রেসিপি ফেচ করার ফাংশন
+  const fetchRecipes = () => {
+    fetch("http://localhost:8080/all-recipes")
       .then((res) => res.json())
-      .then((data) => setUsers(data))
-      .catch((err) => console.error("Error fetching users:", err));
+      .then((data) => setUsers(data)) // আপনার দেওয়া স্টেট অনুসারেই রাখা হয়েছে
+      .catch((err) => console.error("Error fetching recipes:", err));
   };
 
+  // উপরের ফেচ ফিক্সড মেথড রেসিপি স্টেট অনুযায়ী সিঙ্ক করার জন্য নিচে ওভাররাইড করা হলো
   useEffect(() => {
-    fetchUsers();
+    fetch("http://localhost:8080/all-recipes")
+      .then((res) => res.json())
+      .then((data) => setRecipes(data))
+      .catch((err) => console.error("Error fetching recipes:", err));
   }, []);
 
-  const handleToggleBlock = async (id, currentStatus) => {
-    const isCurrentlyBlocked =
-      currentStatus?.toLowerCase() === "blocked" ||
-      currentStatus?.toLowerCase() === "inactive";
+  const refreshRecipesList = () => {
+    fetch("http://localhost:8080/all-recipes")
+      .then((res) => res.json())
+      .then((data) => setRecipes(data))
+      .catch((err) => console.error("Error:", err));
+  };
 
+  // ২. আইডি দিয়ে সরাসরি রেসিপি ডিলিট করার হ্যান্ডলার (অপরিবর্তিত)
+  const handleDeleteRecipe = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8080/user/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          status: isCurrentlyBlocked ? "active" : "inactive",
-        }),
+      const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
+        method: "DELETE",
       });
-
       if (res.ok) {
-        fetchUsers();
+        Swal.fire("Deleted!", "Recipe has been deleted.", "success");
+        refreshRecipesList();
       }
     } catch (err) {
-      console.error("Error updating user status:", err);
+      Swal.fire("Error", "Failed to delete recipe.", "error");
+    }
+  };
+
+  // ৩. Feature / Unfeature স্ট্যাটাস টগল করার হ্যান্ডলার
+  const handleToggleFeatured = async (id, currentStatus) => {
+    const nextStatus = !currentStatus; // বর্তমান ট্রু থাকলে ফলস হবে, ফলস থাকলে ট্রু হবে
+
+    // ⚡ ইনস্ট্যান্ট UI আপডেট (এপিআই লোড হওয়ার আগেই বাটন চেঞ্জ হয়ে যাবে)
+    setRecipes((prevRecipes) =>
+      prevRecipes.map((recipe) =>
+        recipe._id === id ? { ...recipe, isFeatured: nextStatus } : recipe,
+      ),
+    );
+
+    try {
+      const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isFeatured: nextStatus }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.success) {
+        Swal.fire({
+          icon: "success",
+          title: nextStatus ? "Marked as Featured" : "Removed from Featured",
+          timer: 1000,
+          showConfirmButton: false,
+        });
+        refreshRecipesList(); // ডাটাবেজের ফাইনাল স্টেটের সাথে ডাটা মিলানো
+      } else {
+        refreshRecipesList(); // ফেইল হলে আগের স্টেট ফিরিয়ে আনা
+      }
+    } catch (err) {
+      console.error("Error updating featured status:", err);
+      refreshRecipesList(); // নেটওয়ার্ক এরর হলে আগের স্টেট ফিরিয়ে আনা
     }
   };
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* টাইটেল পার্ট */}
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Users</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Manage Recipes</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Block/unblock users and manage roles
+            Delete recipes or toggle featured status
           </p>
         </div>
 
+        {/* রেসিপি টেবিল কার্ড */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-[#FDFBF7] border-b border-gray-100 text-[11px] font-bold uppercase tracking-wider text-gray-400">
-                  <th className="py-4 px-6">User</th>
-                  <th className="py-4 px-6">Role</th>
-                  <th className="py-4 px-6">Premium</th>
-                  <th className="py-4 px-6">Status</th>
-                  <th className="py-4 px-6">Joined</th>
+                  <th className="py-4 px-6">Recipe</th>
+                  <th className="py-4 px-6">Author</th>
+                  <th className="py-4 px-6">Category</th>
+                  <th className="py-4 px-6">Featured</th>
                   <th className="py-4 px-6">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50 text-sm">
-                {users.map((user, idx) => {
-                  const isAdmin = user.role?.toLowerCase() === "admin";
-                  const isPremiumUser =
-                    user.isPremium || user.membership === "premium";
-
-                  // "blocked" অথবা "inactive" থাকলে সেটাকে ব্লক হিসেবে বিবেচনা করা হবে
-                  const isBlockedUser =
-                    user.status?.toLowerCase() === "blocked" ||
-                    user.status?.toLowerCase() === "inactive";
+                {recipes.map((recipe, idx) => {
+                  // ডাটাবেজে true অথবা status === "featured" থাকলে স্ট্যাটাস একটিভ দেখাবে
+                  const isFeatured =
+                    recipe.isFeatured === true ||
+                    recipe.status?.toLowerCase() === "featured";
 
                   return (
                     <tr
-                      key={user._id || idx}
+                      key={recipe._id || idx}
                       className="hover:bg-gray-50/50 transition-colors"
                     >
-                      {/* USER: ইমেজ, নাম ও ইমেইল */}
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          {user.image || user.avatar ? (
-                            <img
-                              src={user.image || user.avatar}
-                              alt=""
-                              className="size-10 rounded-full object-cover"
-                            />
+                          {recipe.image || recipe.recipeImage ? (
+                            <div className="w-12 h-10 rounded-xl overflow-hidden flex-shrink-0">
+                              <img
+                                src={recipe.image || recipe.recipeImage}
+                                alt={recipe.recipeName || "Recipe Image"}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.src = "https://placehold.co/600x400";
+                                }}
+                              />
+                            </div>
                           ) : (
-                            <div className="size-10 rounded-full bg-orange-100 text-[#EA580C] font-bold flex items-center justify-center uppercase text-xs">
-                              {user.name?.charAt(0) || "U"}
+                            <div className="w-12 h-10 rounded-xl bg-orange-100 text-[#EA580C] font-bold flex items-center justify-center text-xs flex-shrink-0">
+                              🍳
                             </div>
                           )}
-                          <div>
-                            <h4 className="font-semibold text-gray-900 leading-tight">
-                              {user.name || "User"}
-                            </h4>
-                            <p className="text-xs text-gray-400 mt-0.5">
-                              {user.email}
-                            </p>
-                          </div>
+                          <span className="font-semibold text-gray-900 truncate max-w-[200px]">
+                            {recipe.name ||
+                              recipe.recipeName ||
+                              "Untitled Recipe"}
+                          </span>
                         </div>
                       </td>
 
-                      {/* ROLE Badge */}
+                      <td className="py-4 px-6 text-gray-500 font-medium">
+                        {recipe.author || recipe.authorName || "Anonymous"}
+                      </td>
+
                       <td className="py-4 px-6">
-                        <span
-                          className={`text-[11px] font-bold px-2.5 py-1 rounded-xl uppercase tracking-wide ${
-                            isAdmin
-                              ? "bg-purple-50 text-purple-600 border border-purple-100"
-                              : "bg-orange-50 text-orange-600 border border-orange-100"
-                          }`}
-                        >
-                          {user.role || "User"}
+                        <span className="text-[11px] font-bold px-2.5 py-1 rounded-xl bg-orange-50 text-orange-600 border border-orange-100 uppercase tracking-wide">
+                          {recipe.category || "General"}
                         </span>
                       </td>
 
-                      {/* PREMIUM Status */}
-                      <td className="py-4 px-6">
-                        {isPremiumUser ? (
-                          <span className="text-xs font-semibold text-amber-600 flex items-center gap-1">
-                            👑 Premium
-                          </span>
-                        ) : (
-                          <span className="text-xs text-gray-400">Free</span>
-                        )}
-                      </td>
-
-                      {/* STATUS Badge */}
                       <td className="py-4 px-6">
                         <span
-                          className={`text-xs px-2.5 py-1 rounded-full font-medium inline-block ${
-                            isBlockedUser
-                              ? "bg-red-50 text-red-600"
-                              : "bg-emerald-50 text-emerald-600"
+                          className={`text-xs px-2.5 py-1 rounded-full font-medium ${
+                            isFeatured
+                              ? "bg-amber-50 text-amber-600 border border-amber-100"
+                              : "bg-gray-50 text-gray-400"
                           }`}
                         >
-                          {isBlockedUser ? "Inactive" : "Active"}
+                          {isFeatured ? "⭐ Featured" : "Regular"}
                         </span>
                       </td>
 
-                      {/* JOINED Date */}
-                      <td className="py-4 px-6 text-xs text-gray-500">
-                        {user.joined || user.joinedDate || "03/03/2025"}
-                      </td>
-
-                      {/* ACTIONS Button */}
                       <td className="py-4 px-6">
-                        <button
-                          onClick={() =>
-                            handleToggleBlock(user._id, user.status)
-                          }
-                          className={`text-xs px-4 py-1.5 rounded-xl font-semibold transition-colors cursor-pointer ${
-                            isBlockedUser
-                              ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                              : "bg-red-50 text-red-500 hover:bg-red-100"
-                          }`}
-                        >
-                          {isBlockedUser ? "Unblock" : "Block"}
-                        </button>
+                        <div className="flex items-center gap-2">
+                          {/* Feature/Unfeature Button */}
+                          <button
+                            onClick={() =>
+                              handleToggleFeatured(recipe._id, isFeatured)
+                            }
+                            className={`text-xs px-3 py-1.5 rounded-xl font-medium border transition-colors cursor-pointer ${
+                              isFeatured
+                                ? "bg-amber-500 text-white border-amber-600 hover:bg-amber-600"
+                                : "bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-600"
+                            }`}
+                          >
+                            {isFeatured ? "Unfeature" : "Feature"}
+                          </button>
+
+                          {/* Delete Button */}
+                          <button
+                            onClick={() => handleDeleteRecipe(recipe._id)}
+                            className="text-xs px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl font-semibold transition-colors cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -172,4 +202,4 @@ const ManageUsers = () => {
   );
 };
 
-export default ManageUsers;
+export default ManageRecipes;

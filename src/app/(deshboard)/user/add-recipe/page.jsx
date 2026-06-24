@@ -3,6 +3,7 @@
 import { useSession } from "@/lib/auth-client";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import Swal from "sweetalert2";
 
 const AddRecipePage = () => {
   const { data: session, isPending } = useSession();
@@ -110,7 +111,13 @@ const AddRecipePage = () => {
       const result = await reponse.json();
       console.log(result);
       if (result.insertedId) {
-        alert("Product added successfully to Database!");
+        Swal.fire({
+          icon: "success",
+          title: "Seccess!",
+          text: "Product added successfully to Database!",
+          timer: 2500,
+          showConfirmButton: false,
+        });
 
         resetForm();
         reset();
