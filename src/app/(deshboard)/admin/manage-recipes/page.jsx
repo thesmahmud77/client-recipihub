@@ -20,32 +20,19 @@ const ManageRecipes = () => {
 
   // ২. আইডি দিয়ে সরাসরি রেসিপি ডিলিট করার হ্যান্ডলার
   const handleDeleteRecipe = async (id) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#6b7280",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
-            method: "DELETE",
-          });
-          if (res.ok) {
-            Swal.fire("Deleted!", "Recipe has been deleted.", "success");
-            fetchRecipes(); // টেবিল ডাটা রিফ্রেশ
-          }
-        } catch (err) {
-          Swal.fire("Error", "Failed to delete recipe.", "error");
-        }
+    try {
+      const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        Swal.fire("Deleted!", "Recipe has been deleted.", "success");
+        fetchRecipes();
       }
-    });
+    } catch (err) {
+      Swal.fire("Error", "Failed to delete recipe.", "error");
+    }
   };
 
-  // ৩. ফিচার্ড স্ট্যাটাস (Feature / Unfeature) টগল করার হ্যান্ডলার
   const handleToggleFeatured = async (id, currentStatus) => {
     try {
       const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
