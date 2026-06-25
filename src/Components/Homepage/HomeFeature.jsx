@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const HomeFeature = async () => {
-  const res = await fetch("http://localhost:8080/featured", {
+  const res = await fetch("http://localhost:8080/add-featured-recipes", {
     cache: "no-store",
   });
   const fetchFeatures = await res.json();
@@ -32,7 +32,6 @@ const HomeFeature = async () => {
             key={feature._id}
             className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden group hover:shadow-md transition-all"
           >
-            {/* ইমেজ এবং টপ ব্যাজ সেকশন */}
             <div className="relative h-48 w-full overflow-hidden">
               <img
                 src={feature.recipeImage}
