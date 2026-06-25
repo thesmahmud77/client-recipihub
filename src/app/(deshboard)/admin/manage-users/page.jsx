@@ -6,15 +6,13 @@ import Swal from "sweetalert2";
 const ManageRecipes = () => {
   const [recipes, setRecipes] = useState([]);
 
-  // ১. সব রেসিপি ফেচ করার ফাংশন
   const fetchRecipes = () => {
     fetch("http://localhost:8080/all-recipes")
       .then((res) => res.json())
-      .then((data) => setUsers(data)) // আপনার দেওয়া স্টেট অনুসারেই রাখা হয়েছে
+      .then((data) => setUsers(data))
       .catch((err) => console.error("Error fetching recipes:", err));
   };
 
-  // উপরের ফেচ ফিক্সড মেথড রেসিপি স্টেট অনুযায়ী সিঙ্ক করার জন্য নিচে ওভাররাইড করা হলো
   useEffect(() => {
     fetch("http://localhost:8080/all-recipes")
       .then((res) => res.json())
@@ -29,7 +27,6 @@ const ManageRecipes = () => {
       .catch((err) => console.error("Error:", err));
   };
 
-  // ২. আইডি দিয়ে সরাসরি রেসিপি ডিলিট করার হ্যান্ডলার (অপরিবর্তিত)
   const handleDeleteRecipe = async (id) => {
     try {
       const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
@@ -44,11 +41,9 @@ const ManageRecipes = () => {
     }
   };
 
-  // ৩. Feature / Unfeature স্ট্যাটাস টগল করার হ্যান্ডলার
   const handleToggleFeatured = async (id, currentStatus) => {
-    const nextStatus = !currentStatus; // বর্তমান ট্রু থাকলে ফলস হবে, ফলস থাকলে ট্রু হবে
+    const nextStatus = !currentStatus;
 
-    // ⚡ ইনস্ট্যান্ট UI আপডেট (এপিআই লোড হওয়ার আগেই বাটন চেঞ্জ হয়ে যাবে)
     setRecipes((prevRecipes) =>
       prevRecipes.map((recipe) =>
         recipe._id === id ? { ...recipe, isFeatured: nextStatus } : recipe,
@@ -71,20 +66,19 @@ const ManageRecipes = () => {
           timer: 1000,
           showConfirmButton: false,
         });
-        refreshRecipesList(); // ডাটাবেজের ফাইনাল স্টেটের সাথে ডাটা মিলানো
+        refreshRecipesList();
       } else {
-        refreshRecipesList(); // ফেইল হলে আগের স্টেট ফিরিয়ে আনা
+        refreshRecipesList();
       }
     } catch (err) {
       console.error("Error updating featured status:", err);
-      refreshRecipesList(); // নেটওয়ার্ক এরর হলে আগের স্টেট ফিরিয়ে আনা
+      refreshRecipesList();
     }
   };
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* টাইটেল পার্ট */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Manage Recipes</h1>
           <p className="text-sm text-gray-500 mt-0.5">
@@ -92,7 +86,6 @@ const ManageRecipes = () => {
           </p>
         </div>
 
-        {/* রেসিপি টেবিল কার্ড */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -107,7 +100,6 @@ const ManageRecipes = () => {
               </thead>
               <tbody className="divide-y divide-gray-50 text-sm">
                 {recipes.map((recipe, idx) => {
-                  // ডাটাবেজে true অথবা status === "featured" থাকলে স্ট্যাটাস একটিভ দেখাবে
                   const isFeatured =
                     recipe.isFeatured === true ||
                     recipe.status?.toLowerCase() === "featured";

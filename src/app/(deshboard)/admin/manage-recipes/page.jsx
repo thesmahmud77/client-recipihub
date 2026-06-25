@@ -6,11 +6,10 @@ import Swal from "sweetalert2";
 const ManageRecipes = () => {
   const [recipes, setRecipes] = useState([]);
 
-  // ১. সব রেসিপি ফেচ করার ফাংশন
   const fetchRecipes = () => {
     fetch("http://localhost:8080/all-recipes")
       .then((res) => res.json())
-      .then((data) => setRecipes(data)) // ✅ এখানে setRecipes ফিক্স করা হয়েছে
+      .then((data) => setRecipes(data))
       .catch((err) => console.error("Error fetching recipes:", err));
   };
 
@@ -18,7 +17,6 @@ const ManageRecipes = () => {
     fetchRecipes();
   }, []);
 
-  // ২. আইডি দিয়ে সরাসরি রেসিপি ডিলিট করার হ্যান্ডলার
   const handleDeleteRecipe = async (id) => {
     try {
       const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
@@ -26,48 +24,81 @@ const ManageRecipes = () => {
       });
       if (res.ok) {
         Swal.fire("Deleted!", "Recipe has been deleted.", "success");
-        fetchRecipes(); // টেবিল ডাটা রিফ্রেশ
+        fetchRecipes();
       }
     } catch (err) {
       Swal.fire("Error", "Failed to delete recipe.", "error");
     }
   };
 
-  // ৩. Feature / Unfeature স্ট্যাটাস টগল করার হ্যান্ডলার
-  const handleToggleFeatured = async (id, currentStatus) => {
+  const handleMakeFeatured = async (recipeId) => {
+    const featuredRecipe = recipes.find((recipe) => recipe._id === recipeId);
+
+    if (!featuredRecipe) {
+      Swal.fire("Error", "Recipe data not found locally.", "error");
+      return;
+    }
+
+    // অবজেক্ট থেকে মেইন _id আলাদা করা
+    const { _id, ...recipeWithoutId } = featuredRecipe;
+
+    const featuredData = {
+      ...recipeWithoutId,
+      originalId: recipeId, // ব্যাকঅ্যান্ডে ডুপ্লিকেট চেক করার জন্য পাঠানো হচ্ছে
+      isFeatured: true,
+      featuredAt: new Date(),
+    };
+
     try {
-      const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
-        method: "PATCH",
+      const res = await fetch(`http://localhost:8080/add-featured-recipes`, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isFeatured: !currentStatus }), // বর্তমান স্ট্যাটাসের বিপরীত (true/false) পাঠাবে
+        body: JSON.stringify(featuredData),
       });
 
-      if (res.ok) {
+      const data = await res.json();
+
+      // ⚠️ ডাটা অলরেডি থাকলে (Duplicate হলে) ইউজারকে অ্যালার্ট দেখাবে
+      if (data.isDuplicate) {
+        Swal.fire({
+          icon: "info",
+          title: "Already Added!",
+          text: data.message,
+          confirmButtonColor: "#EA580C",
+        });
+        return;
+      }
+
+      // 🎉 ডাটাবেজে সাকসেসফুলি অ্যাড হলে
+      if (res.ok && data.insertedId) {
         Swal.fire({
           icon: "success",
-          title: "Status Updated",
-          timer: 1000,
+          title: "Successfully Added",
+          text: "Recipe has been added to the featured collection.",
+          timer: 1500,
           showConfirmButton: false,
         });
-        fetchRecipes(); // টেবিল ডাটা রিফ্রেশ
+        fetchRecipes();
       }
     } catch (err) {
-      console.error("Error updating featured status:", err);
+      console.error("Error:", err);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Something went wrong while connecting to the server.",
+      });
     }
   };
-
   return (
     <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* টাইটেল পার্ট */}
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Manage Recipes</h1>
           <p className="text-sm text-gray-500 mt-0.5">
-            Delete recipes or toggle featured status
+            Delete recipes or make them featured
           </p>
         </div>
 
-        {/* রেসিপি টেবিল কার্ড */}
         <div className="bg-white rounded-3xl border border-gray-100 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
@@ -82,9 +113,7 @@ const ManageRecipes = () => {
               </thead>
               <tbody className="divide-y divide-gray-50 text-sm">
                 {recipes.map((recipe, idx) => {
-                  const isFeatured =
-                    recipe.isFeatured ||
-                    recipe.status?.toLowerCase() === "featured";
+                  const isFeatured = recipe.isFeatured === true;
 
                   return (
                     <tr
@@ -127,6 +156,7 @@ const ManageRecipes = () => {
                         </span>
                       </td>
 
+                      {/* Featured Column */}
                       <td className="py-4 px-6">
                         <span
                           className={`text-xs px-2.5 py-1 rounded-full font-medium ${
@@ -141,14 +171,17 @@ const ManageRecipes = () => {
 
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
-                          {/* Feature/Unfeature Button */}
+                          {/* Feature Button */}
                           <button
-                            onClick={() =>
-                              handleToggleFeatured(recipe._id, isFeatured)
-                            }
-                            className="text-xs px-3 py-1.5 bg-gray-50 hover:bg-gray-100 rounded-xl font-medium border border-gray-200 text-gray-600 transition-colors cursor-pointer"
+                            onClick={() => handleMakeFeatured(recipe._id)}
+                            disabled={isFeatured}
+                            className={`text-xs px-3 py-1.5 rounded-xl font-medium border transition-colors ${
+                              isFeatured
+                                ? "bg-amber-50 text-amber-400 border-amber-100 cursor-not-allowed"
+                                : "bg-gray-50 hover:bg-gray-100 border-gray-200 text-gray-600 cursor-pointer"
+                            }`}
                           >
-                            {isFeatured ? "Unfeature" : "Feature"}
+                            {isFeatured ? "Featured" : "Feature"}
                           </button>
 
                           {/* Delete Button */}
