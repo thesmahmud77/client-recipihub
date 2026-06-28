@@ -1,9 +1,12 @@
 import Link from "next/link";
 
 const HomeFeature = async () => {
-  const res = await fetch("http://localhost:8080/add-featured-recipes", {
-    cache: "no-store",
-  });
+  const res = await fetch(
+    "https://server-recipihub.vercel.app/add-featured-recipes",
+    {
+      cache: "no-store",
+    },
+  );
   const fetchFeatures = await res.json();
   return (
     <div>

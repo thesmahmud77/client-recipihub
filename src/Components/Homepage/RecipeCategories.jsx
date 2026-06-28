@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const RecipeCategories = async () => {
-  const res = await fetch("http://localhost:8080/featured", {
+  const res = await fetch("https://server-recipihub.vercel.app/featured", {
     cache: "no-store",
   });
   const fetchFeatures = await res.json();

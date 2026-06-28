@@ -131,7 +131,7 @@ const BrowseRecipes = () => {
 
   /* Fetch all recipes once on mount */
   useEffect(() => {
-    fetch("http://localhost:8080/all-recipes")
+    fetch("https://server-recipihub.vercel.app/all-recipes")
       .then((res) => {
         if (!res.ok) throw new Error("Network error");
         return res.json();

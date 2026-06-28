@@ -4,7 +4,7 @@ import Link from "next/link";
 const RecipeDetailsPage = async ({ params }) => {
   const { id } = await params;
 
-  const res = await fetch(`http://localhost:8080/recipes/${id}`, {
+  const res = await fetch(`https://server-recipihub.vercel.app/recipes/${id}`, {
     cache: "no-cache",
   });
   const recipe = await res.json();
@@ -22,7 +22,7 @@ const RecipeDetailsPage = async ({ params }) => {
   } = recipe;
 
   const relatedRes = await fetch(
-    `http://localhost:8080/recipes-related/${category}`,
+    `https://server-recipihub.vercel.app/recipes-related/${category}`,
     { cache: "no-cache" },
   );
   const relatedRecipes = await relatedRes.json();

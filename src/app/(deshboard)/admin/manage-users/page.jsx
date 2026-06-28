@@ -12,7 +12,7 @@ const ManageUsers = () => {
 
   // ১. ইউজার ডাটা ফেচ করা
   const fetchUsers = () => {
-    fetch("http://localhost:8080/user")
+    fetch("https://server-recipihub.vercel.app/user")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -40,9 +40,12 @@ const ManageUsers = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await fetch(`http://localhost:8080/delete-user/${id}`, {
-            method: "DELETE",
-          });
+          const res = await fetch(
+            `https://server-recipihub.vercel.app/delete-user/${id}`,
+            {
+              method: "DELETE",
+            },
+          );
 
           if (res.ok) {
             Swal.fire("Deleted!", "User has been deleted.", "success");

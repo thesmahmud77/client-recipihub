@@ -46,13 +46,16 @@ const RecipeActions = ({ recipe }) => {
     };
 
     try {
-      const res = await fetch("http://localhost:8080/favorite-recipes", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        "https://server-recipihub.vercel.app/favorite-recipes",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(recipeData),
         },
-        body: JSON.stringify(recipeData),
-      });
+      );
 
       const data = await res.json();
       // console.log(data, "Data From Server");

@@ -55,11 +55,14 @@ const ReportRecipePage = ({ recipe }) => {
     console.log(reportData);
 
     try {
-      const res = await fetch("http://localhost:8080/report-recipe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reportData),
-      });
+      const res = await fetch(
+        "https://server-recipihub.vercel.app/report-recipe",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(reportData),
+        },
+      );
 
       if (res.ok) {
         Swal.fire({

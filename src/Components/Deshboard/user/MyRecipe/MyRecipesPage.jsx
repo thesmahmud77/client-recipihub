@@ -12,7 +12,7 @@ const MyRecipesPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:8080/my-recipes?email=${useremail}`)
+    fetch(`https://server-recipihub.vercel.app/my-recipes?email=${useremail}`)
       .then((res) => res.json())
       .then((data) => {
         setRecipes(data);
@@ -23,7 +23,7 @@ const MyRecipesPage = () => {
   const handleDelete = async (id) => {
     try {
       const resDelete = await fetch(
-        `http://localhost:8080/recipe-delete-from-own-email/${id}`,
+        `https://server-recipihub.vercel.app/recipe-delete-from-own-email/${id}`,
         {
           method: "DELETE",
         },

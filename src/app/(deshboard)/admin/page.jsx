@@ -4,12 +4,10 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 
 const AdminOverview = () => {
-  // ১. শুধুমাত্র ইউজার লিস্ট রাখার জন্য একটি স্টেট
   const [users, setUsers] = useState([]);
 
-  // ২. পেজ লোড হওয়ার সাথে সাথে এপিআই থেকে ডেটা ফেচ করা
   useEffect(() => {
-    fetch("http://localhost:8080/user")
+    fetch("https://server-recipihub.vercel.app/user")
       .then((res) => res.json())
       .then((data) => {
         setUsers(data);
@@ -18,12 +16,11 @@ const AdminOverview = () => {
       .catch((err) => console.error("Data fetch error:", err));
   }, []);
 
-  // ৩. ফেচ করা ইউজার অ্যারে থেকে সরাসরি স্ট্যাটস হিসাব করা
   const totalUsers = users.length;
   const premiumMembers = users.filter(
     (u) => u.isPremium || u.role === "premium",
   ).length;
-  const recentUsers = [...users].slice(0, 4); // সর্বশেষ ৪ জন ইউজার
+  const recentUsers = [...users].slice(0, 4);
 
   return (
     <div className="bg-[#FAF7F2] min-h-screen p-6 md:p-8 text-gray-800 w-[1000px]">

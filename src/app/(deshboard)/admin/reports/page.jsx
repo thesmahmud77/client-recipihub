@@ -13,7 +13,9 @@ const RecipeReportsPage = () => {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/recipe-reports");
+      const res = await fetch(
+        "https://server-recipihub.vercel.app/recipe-reports",
+      );
       const data = await res.json();
       setReports(data);
     } catch (error) {
@@ -27,12 +29,10 @@ const RecipeReportsPage = () => {
     fetchReports();
   }, []);
 
-  // ২. রেসিপি রিপোর্ট ডিলিট করা ফাংশন
   const handleRemoveRecipe = async (reportMongoId) => {
     try {
-      // সরাসরি সঠিক ব্যাকঅ্যান্ড এপিআই পাথে রিকোয়েস্ট পাঠানো
       const res = await fetch(
-        `http://localhost:8080/report-delete-from-admin/${reportMongoId}`,
+        `https://server-recipihub.vercel.app/report-delete-from-admin/${reportMongoId}`,
         {
           method: "DELETE",
         },
@@ -60,7 +60,7 @@ const RecipeReportsPage = () => {
   const handleDismissReport = async (id, newStatus) => {
     try {
       const res = await fetch(
-        `http://localhost:8080/recipe-reports-update/${id}`,
+        `https://server-recipihub.vercel.app/recipe-reports-update/${id}`,
         {
           method: "PATCH",
           headers: {

@@ -13,7 +13,7 @@ const RecentRecipes = () => {
     const fetchRecipes = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8080/my-recipes?email=${useremail}`,
+          `https://server-recipihub.vercel.app/my-recipes?email=${useremail}`,
         );
         const data = await res.json();
         setRecipes(data);
@@ -32,7 +32,7 @@ const RecentRecipes = () => {
     if (!confirm) return;
 
     try {
-      await fetch(`http://localhost:8080/recipes/${id}`, {
+      await fetch(`https://server-recipihub.vercel.app/recipes/${id}`, {
         method: "DELETE",
       });
       // Delete করার পর list থেকে সরাও

@@ -7,7 +7,7 @@ const ManageRecipes = () => {
   const [recipes, setRecipes] = useState([]);
 
   const fetchRecipes = () => {
-    fetch("http://localhost:8080/all-recipes")
+    fetch("https://server-recipihub.vercel.app/all-recipes")
       .then((res) => res.json())
       .then((data) => setRecipes(data))
       .catch((err) => console.error("Error fetching recipes:", err));
@@ -19,9 +19,12 @@ const ManageRecipes = () => {
 
   const handleDeleteRecipe = async (id) => {
     try {
-      const res = await fetch(`http://localhost:8080/all-recipes/${id}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `https://server-recipihub.vercel.app/all-recipes/${id}`,
+        {
+          method: "DELETE",
+        },
+      );
       if (res.ok) {
         Swal.fire("Deleted!", "Recipe has been deleted.", "success");
         fetchRecipes();
@@ -50,11 +53,14 @@ const ManageRecipes = () => {
     };
 
     try {
-      const res = await fetch(`http://localhost:8080/add-featured-recipes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(featuredData),
-      });
+      const res = await fetch(
+        `https://server-recipihub.vercel.app/add-featured-recipes`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(featuredData),
+        },
+      );
 
       const data = await res.json();
 

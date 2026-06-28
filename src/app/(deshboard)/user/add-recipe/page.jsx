@@ -100,13 +100,16 @@ const AddRecipePage = () => {
       };
 
       // console.log("Final Recipe Data to Send Backend:", recipeData);
-      const reponse = await fetch("http://localhost:8080/add-recipe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const reponse = await fetch(
+        "https://server-recipihub.vercel.app/add-recipe",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(recipeData),
         },
-        body: JSON.stringify(recipeData),
-      });
+      );
 
       const result = await reponse.json();
       console.log(result);

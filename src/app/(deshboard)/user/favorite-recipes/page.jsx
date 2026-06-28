@@ -14,10 +14,13 @@ const SavedFavoritesPage = () => {
 
   useEffect(() => {
     if (userEmail) {
-      fetch(`http://localhost:8080/favorite-recipes?email=${userEmail}`, {
-        // ✅ সঠিক endpoint
-        cache: "no-cache",
-      })
+      fetch(
+        `https://server-recipihub.vercel.app/favorite-recipes?email=${userEmail}`,
+        {
+          // ✅ সঠিক endpoint
+          cache: "no-cache",
+        },
+      )
         .then((res) => res.json())
         .then((data) => {
           setFavData(data); // ✅ state এ store
@@ -40,7 +43,7 @@ const SavedFavoritesPage = () => {
     // console.log(id);
     try {
       const resDelete = await fetch(
-        `http://localhost:8080/remove-to-fav/${id}`,
+        `https://server-recipihub.vercel.app/remove-to-fav/${id}`,
         {
           method: "DELETE",
         },
