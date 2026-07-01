@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import Swal from "sweetalert2";
 
 const RecentRecipes = () => {
   const { data: session, isPending } = useSession();
@@ -10,6 +11,8 @@ const RecentRecipes = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!useremail) return;
+
     const fetchRecipes = async () => {
       try {
         const res = await fetch(
@@ -25,21 +28,47 @@ const RecentRecipes = () => {
     };
 
     fetchRecipes();
-  }, []);
+  }, [useremail]);
 
   const handleDelete = async (id) => {
-    const confirm = window.confirm("এই recipe টি delete করতে চান?");
-    if (!confirm) return;
+    Swal.fire({
+      title: "Do you want to delete this recipe?",
+      text: "This action cannot be undone!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f97316", // Orange color to match theme
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const resDelete = await fetch(
+            `https://server-recipihub.vercel.app/recipe-delete-from-own-email/${id}`,
+            {
+              method: "DELETE",
+            },
+          );
 
-    try {
-      await fetch(`https://server-recipihub.vercel.app/recipes/${id}`, {
-        method: "DELETE",
-      });
-      // Delete করার পর list থেকে সরাও
-      setRecipes((prev) => prev.filter((r) => r._id !== id));
-    } catch (error) {
-      console.error("Delete error:", error);
-    }
+          if (resDelete.ok) {
+            setRecipes((prev) => prev.filter((r) => r._id !== id));
+
+            Swal.fire({
+              icon: "success",
+              title: "Deleted!",
+              text: "Recipe has been deleted successfully.",
+              timer: 1500,
+              showConfirmButton: false,
+            });
+          } else {
+            Swal.fire("Error", "Failed to delete from server.", "error");
+          }
+        } catch (err) {
+          console.error(err);
+          Swal.fire("Error", "Something went wrong with the network!", "error");
+        }
+      }
+    });
   };
 
   if (loading) {
@@ -104,8 +133,8 @@ const RecentRecipes = () => {
               <td className="py-3.5 text-gray-500">🕐 {recipe.prepTime} min</td>
 
               {/* Likes */}
-              <td className="py-3.5 text-orange-500 font-medium flex items-center justify-center gap-2">
-                ❤{recipe.likesCount}
+              <td className="py-3.5 text-orange-500 font-medium flex items-center gap-2">
+                ❤{recipe.likesCount || 0}
               </td>
 
               {/* Status Badge */}
@@ -146,7 +175,7 @@ const RecentRecipes = () => {
       {/* Empty State */}
       {recipes.length === 0 && (
         <p className="text-center text-sm text-gray-400 py-8">
-          কোনো recipe নেই। নতুন recipe যোগ করুন।
+          There are no recipes yet. Start by adding your first recipe!
         </p>
       )}
     </div>

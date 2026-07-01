@@ -2,14 +2,50 @@
 import { useSession, signOut } from "@/lib/auth-client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
   const user = session?.user;
+  const router = useRouter();
 
-  const handleLogOut = async () => {
-    await signOut();
+  const handleLogOut = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of your account!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#FF7214",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Sign out!",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          // Better-Auth signOut-এর সাকসেস হুক ব্যবহার করে রিডাইরেক্ট
+          await signOut({
+            fetchOptions: {
+              onSuccess: () => {
+                router.push("/auth/signin"); // লগআউট সফল হলে লগইন পেজে নিয়ে যাবে
+              },
+            },
+          });
+
+          Swal.fire({
+            icon: "success",
+            title: "Signed Out!",
+            text: "You have been logged out successfully.",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+        } catch (error) {
+          console.error("Logout error:", error);
+          Swal.fire("Error", "Something went wrong during sign out.", "error");
+        }
+      }
+    });
   };
 
   const navLinkClass = (path) =>

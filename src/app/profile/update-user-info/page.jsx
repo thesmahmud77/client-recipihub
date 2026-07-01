@@ -52,7 +52,7 @@ const UpdateUserInfoPage = () => {
       }
 
       const updateUser = await fetch(
-        "https://recipihub.vercel.app/update-user",
+        "https://server-recipihub.vercel.app/update-user",
         {
           method: "PATCH",
           headers: {

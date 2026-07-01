@@ -5,10 +5,13 @@ import Link from "next/link";
 import { Eye } from "@gravity-ui/icons";
 import { EyeSlash } from "@gravity-ui/icons";
 import { signUp, signIn } from "@/lib/auth-client";
+import Swal from "sweetalert2";
+import { useRouter } from "next/navigation";
 
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -43,13 +46,28 @@ const SignupPage = () => {
       });
 
       if (error) {
-        alert(error.message);
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: "Something went wrong!",
+          footer: '<a href="#">Why do I have this issue?</a>',
+        });
       } else {
-        alert("Account Created Successfully!");
+        Swal.fire({
+          title: "Login Successful!",
+          icon: "success",
+          draggable: true,
+        });
         reset();
+        router.push("/");
       }
     } catch (err) {
-      alert("Something went wrong!");
+      Swal.fire({
+        icon: "error",
+        title: "Something went wrong!",
+        // text: "Something went wrong!",
+        footer: '<a href="#">Why do I have this issue?</a>',
+      });
       console.error(err);
     } finally {
       setLoading(false);
