@@ -34,16 +34,6 @@ const PremiumBadge = ({ user }) => {
 
       {/* ডান পাশ — Price + Button */}
       <div className="flex flex-col items-end gap-2.5 shrink-0">
-        <div className="text-right">
-          <p className="text-[11px] text-gray-500 uppercase tracking-wider mb-0.5">
-            Current Plan
-          </p>
-          <p className="text-3xl font-medium text-amber-300 leading-none">
-            $9.99
-          </p>
-          <p className="text-xs text-gray-500 mt-0.5">/ mo</p>
-        </div>
-
         <form action="/api/checkout_sessionss" method="POST">
           <section>
             <button

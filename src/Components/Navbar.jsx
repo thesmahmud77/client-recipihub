@@ -53,9 +53,12 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <span className="text-base font-bold text-[#2A1A12] whitespace-nowrap">
-                Hi, {user.name}
-              </span>
+              <Link
+                href="/profile"
+                className="text-sm font-bold text-[#2A1A12] hover:text-amber-600 transition-colors"
+              >
+                Profile
+              </Link>
               <button
                 onClick={handleLogOut}
                 className="px-5 py-2 bg-[#FF7214] text-white text-sm font-semibold rounded-full hover:bg-[#e5650f] transition-colors cursor-pointer"
