@@ -28,6 +28,55 @@ const ManageUsers = () => {
     fetchUsers();
   }, []);
 
+  // ২. ইউজার ব্লক/আনব্লক করার টগল ফাংশন
+  const handleToggleBlock = async (id, currentStatus) => {
+    const isCurrentlyBlocked = currentStatus === "Blocked";
+    const actionText = isCurrentlyBlocked ? "unblock" : "block";
+    const nextStatus = isCurrentlyBlocked ? "Active" : "Blocked"; // ডাটাবেজে যে স্ট্যাটাস সেভ হবে
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You want to ${actionText} this user?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: isCurrentlyBlocked ? "#10B981" : "#F97316",
+      confirmButtonText: `Yes, ${actionText} them!`,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const res = await fetch(
+            `http://localhost:8080/user-block-toggle/${id}`,
+            {
+              method: "PATCH",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ status: nextStatus }),
+            },
+          );
+
+          if (res.ok) {
+            Swal.fire(
+              isCurrentlyBlocked ? "Unblocked!" : "Blocked!",
+              `User has been ${actionText}ed successfully.`,
+              "success",
+            );
+            fetchUsers();
+          } else {
+            Swal.fire("Error", `Failed to ${actionText} user.`, "error");
+          }
+        } catch (err) {
+          console.error(err);
+          Swal.fire(
+            "Error",
+            "Something went wrong with the server connection.",
+            "error",
+          );
+        }
+      }
+    });
+  };
+
   const handleDeleteUser = async (id) => {
     Swal.fire({
       title: "Are you sure?",
@@ -171,7 +220,7 @@ const ManageUsers = () => {
                             onClick={() =>
                               handleToggleBlock(user._id, user.status)
                             }
-                            className={`text-xs px-3 py-1.5 rounded-xl font-bold cursor-pointer ${isBlocked ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"}`}
+                            className={`text-xs px-3 py-1.5 rounded-xl font-bold cursor-pointer transition-colors ${isBlocked ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" : "bg-orange-50 text-orange-600 hover:bg-orange-100"}`}
                           >
                             {isBlocked ? "Unblock" : "Block"}
                           </button>
