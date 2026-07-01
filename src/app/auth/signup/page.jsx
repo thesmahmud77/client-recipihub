@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { Eye } from "@gravity-ui/icons";
 import { EyeSlash } from "@gravity-ui/icons";
-import { signUp } from "@/lib/auth-client";
+import { signUp, signIn } from "@/lib/auth-client";
 
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -56,6 +56,12 @@ const SignupPage = () => {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    await signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
+  };
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-[#FAF6F0] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-6">
@@ -250,30 +256,13 @@ const SignupPage = () => {
         </div>
 
         {/* ৭. গুগল সাইন-ইন বাটন */}
+
         <button
           type="button"
-          className="w-full py-3 bg-white border border-[#E6DCD3] text-sm font-bold text-[#2A1A12] rounded-full flex items-center justify-center space-x-2.5 hover:bg-gray-50 transition-colors shadow-xs active:scale-[0.99] transform cursor-pointer"
+          onClick={handleGoogleSignIn}
+          className="border-2 border-gray-700/50 w-full py-3 text-gray-700 p-2 rounded-md font-semibold cursor-pointer hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
         >
-          {/* Google Color Logo SVG */}
-          <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <path
-              fill="#4285F4"
-              d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.61a5.66 5.66 0 01-2.45 3.71v3.08h3.95a12 12 0 003.63-8.64z"
-            />
-            <path
-              fill="#34A853"
-              d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.95-3.08c-1.1.74-2.5 1.18-3.98 1.18-3.07 0-5.67-2.08-6.6-4.88H1.31v3.19A12 12 0 0012 24z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.4 14.31a7.16 7.16 0 010-4.62V6.5H1.31a12 12 0 000 11l4.09-3.19z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42A11.94 11.94 0 0012 0 12 12 0 001.31 6.5l4.09 3.19c.93-2.8 3.53-4.88 6.6-4.88z"
-            />
-          </svg>
-          <span>Continue with Google</span>
+          Continue with Google
         </button>
 
         {/* ফুটার লিঙ্ক */}

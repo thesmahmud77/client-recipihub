@@ -19,7 +19,6 @@ const AddRecipePage = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     reset,
     formState: { errors },
   } = useForm();
@@ -56,13 +55,11 @@ const AddRecipePage = () => {
     setInstructions(instructions.filter((_, index) => index !== indexToRemove));
   };
 
-  // ৩. ফাইনাল ফর্ম সাবমিট ও ImgBB আপলোড লজিক
   const onSubmit = async (data) => {
     try {
       setLoading(true);
       let finalPhotoURL = data.imageUrl || "";
 
-      // যদি ইউজার ফাইল আপলোড করে থাকে
       if (data.photo && data.photo[0]) {
         const imgFile = data.photo[0];
         const formData = new FormData();
@@ -81,7 +78,6 @@ const AddRecipePage = () => {
         }
       }
 
-      // সমস্ত ডেটা একসাথে অবজেক্ট তৈরি করা
       const recipeData = {
         recipeName: data.recipeName,
         recipeImage: finalPhotoURL,
@@ -99,7 +95,6 @@ const AddRecipePage = () => {
         isFeatured: false,
       };
 
-      // console.log("Final Recipe Data to Send Backend:", recipeData);
       const reponse = await fetch(
         "https://server-recipihub.vercel.app/add-recipe",
         {
@@ -113,20 +108,42 @@ const AddRecipePage = () => {
 
       const result = await reponse.json();
       console.log(result);
+
+      if (result.limitReached) {
+        Swal.fire({
+          icon: "warning",
+          title: "লিমিট শেষ!",
+          text: result.message,
+          confirmButtonText: "প্রিমিয়াম নিন",
+          showCancelButton: true,
+          cancelButtonText: "পরে করব",
+          confirmButtonColor: "#FF7214",
+        });
+        return;
+      }
+
+      // ✅ সফলভাবে অ্যাড হলে
       if (result.insertedId) {
         Swal.fire({
           icon: "success",
-          title: "Seccess!",
-          text: "Product added successfully to Database!",
+          title: "সফল হয়েছে!",
+          text: "রেসিপি সফলভাবে যোগ করা হয়েছে!",
           timer: 2500,
           showConfirmButton: false,
         });
 
-        resetForm();
+        setIngredients([]);
+        setInstructions([]);
+        setDifficulty("Medium");
         reset();
       }
     } catch (error) {
       console.error("Error submitting recipe form:", error);
+      Swal.fire({
+        icon: "error",
+        title: "ব্যর্থ হয়েছে!",
+        text: "রেসিপি অ্যাড করতে সমস্যা হয়েছে, আবার চেষ্টা করুন।",
+      });
     } finally {
       setLoading(false);
     }
